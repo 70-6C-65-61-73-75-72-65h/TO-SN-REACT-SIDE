@@ -1,7 +1,17 @@
 .nav {
+    /* display: grid; */
     grid-area: n;
     background-color: burlywood;
-    padding: 20px;
+    padding: 2vw;
+
+    grid-template-areas:
+    "nav_item";
+    grid-template-rows: repeat(auto-fit, 1fr);
+}
+
+.item {
+    display: grid;
+    grid-area: nav_item;
 }
 
 .item a {

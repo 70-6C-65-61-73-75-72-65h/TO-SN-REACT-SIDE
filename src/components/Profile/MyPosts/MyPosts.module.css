@@ -1,7 +1,32 @@
 .postsBlock {
-    padding: 10px;
+    /* padding: 1vh; */
+    display: grid;
+    grid-template-areas:
+    "myPostsHeader"
+    "createPost"
+    "posts";
+    /* grid-template-rows: 60px 1fr; */
+    grid-template-rows: 6vh 1fr 3fr;
+    grid-area: postsBlock;
+}
+
+.myPostsHeader {
+    /* display: grid; */
+    font-size: 3vh;
+    font-weight: bold;
+    grid-area: myPostsHeader;
+}
+
+.createPost {
+    /* display: grid; */
+    grid-area: createPost;
 }
 
 .posts {
-    margin-top: 10px;
+    /* margin-top: 1vh; */
+    display: grid;
+    grid-area: posts;
+    grid-template-areas:
+    "post_item";
+    grid-template-rows: repeat(auto-fit, 1fr);
 }

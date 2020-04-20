@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- <a href="/" onclick="return false">Нажми здесь</a>
+или
+<a href="/" onclick="event.preventDefault()">здесь</a> -->
+
+    <ul id="menu" class="menu">
+        <li><a href="file:///C:/Users/maxul/my-app/src/html">HTML</a></li>
+        <li><a href="file:///C:/Users/maxul/my-app/src/javascript">JavaScript</a></li>
+        <li><a href="file:///C:/Users/maxul/my-app/src/css">CSS</a></li>
+    </ul>
+
+</body>
+
+<script>
+    let menu = document.getElementById('menu');
+    menu.onclick = function (event) {
+        if (event.target.nodeName != 'A') return;
+
+        let href = event.target.getAttribute('href');
+        // alert(href); // может быть подгрузка с сервера, генерация интерфейса и т.п.
+        window.history.pushState({param: 'Value'}, '', href);
+
+        return false; // отменить действие браузера (переход по ссылке)
+    };
+</script>
+
+</html>

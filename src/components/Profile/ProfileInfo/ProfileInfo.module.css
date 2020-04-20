@@ -1,0 +1,60 @@
+.profile_info {
+    display: grid;
+
+    grid-area: profile_info;
+    grid-template-areas:
+    "landi_block"
+    "descriptionBlock";
+
+    /* grid-template-rows: 60px 1fr; */
+    grid-template-rows: 20vh 20vh; /*20 vh 20vh*/
+
+}
+
+.landi_block {
+    /* display: grid; */
+    grid-area: landi_block;
+}
+
+.landi_block > img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%; /*max-height: ;*/
+}
+
+
+
+.descriptionBlock {
+    display: grid;
+    /* padding: 1vh; */
+
+    grid-template-areas:
+    "ava_block username"
+    "ava_block userinfo";
+
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 2fr 3fr;
+    grid-area: descriptionBlock;
+}
+
+
+.ava_block {
+    /* display: grid; */
+    grid-area: ava_block;
+}
+
+.ava_block > img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%; /*max-height: ;*/
+}
+
+.username {
+    /* display: grid; */
+    grid-area: username;
+}
+
+.userinfo {
+    /* display: grid; */
+    grid-area:  userinfo;
+}

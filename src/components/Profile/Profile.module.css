@@ -1,0 +1,12 @@
+.profile_wrapper {
+    /* ничего не указываем, так как их обьявляем только как точки начать - закончить для детей*/
+    /* grid-area: profile; */
+    /* display: grid; */
+    /* grid-area: c; */
+    /* background-color: cornflowerblue; */
+    grid-template-areas:
+    "profile_info"
+    "postsBlock";
+
+    grid-template-rows: 1fr 1fr;
+}
