@@ -20,16 +20,27 @@
 </body>
 
 <script>
-    let menu = document.getElementById('menu');
-    menu.onclick = function (event) {
-        if (event.target.nodeName != 'A') return;
+    // let followed = 'kek';
+    // let notfollowed = null;
+    let d = `{'large': 'https://i.pinimg.com/originals/03/4d/64/034d64236d0bff434c25ae14b76c205b.jpg', 'small': 'https://img.etimg.com/thumb/msid-69037337,width-300,imgsize-144736,resizemode-4/oldrich-muller.jpg'}`;
+    console.log(`${d}`);
+    d = d.replace(/\'/g, '\"')
+    console.log(d);
+    d = JSON.parse(d);
+    console.log(d['large']);
+    console.log(d);
+    // console.log(`UPDATE items SET ${ ('followed'!== null) ? ("'followed' = ${followed}") : null} WHERE id =;`);
+    // console.log(`UPDATE items SET ${'followed'= notfollowed || null} WHERE id =;`;)
+    // let menu = document.getElementById('menu');
+    // menu.onclick = function (event) {
+    //     if (event.target.nodeName != 'A') return;
 
-        let href = event.target.getAttribute('href');
-        // alert(href); // может быть подгрузка с сервера, генерация интерфейса и т.п.
-        window.history.pushState({param: 'Value'}, '', href);
+    //     let href = event.target.getAttribute('href');
+    //     // alert(href); // может быть подгрузка с сервера, генерация интерфейса и т.п.
+    //     window.history.pushState({param: 'Value'}, '', href);
 
-        return false; // отменить действие браузера (переход по ссылке)
-    };
+    //     return false; // отменить действие браузера (переход по ссылке)
+    // };
 </script>
 
 </html>

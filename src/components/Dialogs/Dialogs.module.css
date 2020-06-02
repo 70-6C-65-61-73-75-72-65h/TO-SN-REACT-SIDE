@@ -52,3 +52,7 @@
     color: white;
 } */
 
+
+.createMessage {
+    grid-area: createMessage;
+}

@@ -6,7 +6,7 @@
     "createPost"
     "posts";
     /* grid-template-rows: 60px 1fr; */
-    grid-template-rows: 6vh 1fr 3fr;
+    grid-template-rows: 6vh 15vh 3fr;
     grid-area: postsBlock;
 }
 

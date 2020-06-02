@@ -1,0 +1,23 @@
+.userPhoto {
+    width: 8vw;
+    border-radius: 50%;
+    height: 8vw;
+}
+
+.bottom{
+    bottom: 5vh; /* Расстояние от нижнего края окна браузера */
+    position: absolute; /* Абсолютное позиционирование */
+}
+
+.selectedPage{
+    font-weight: bold;
+}
+
+
+/* .hidden_class {
+    display: none;
+}
+
+.shown_class {
+    display: block;
+} */
