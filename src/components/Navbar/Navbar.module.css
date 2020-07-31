@@ -1,7 +1,7 @@
 .nav {
     /* display: grid; */
     grid-area: n;
-    background-color: burlywood;
+    background-color: rgb(25, 26, 42);
     padding: 2vw;
 
     grid-template-areas:
@@ -12,13 +12,14 @@
 .item {
     display: grid;
     grid-area: nav_item;
+    font-size: 2vh;
 }
 
-.item a {
+.item > a {
     color: white;
     text-decoration: none;
 }
 
-.item a.activeLink {
-    color: gold;
+.item > a.activeLink {
+    color: rgb(226, 194, 9);
 }

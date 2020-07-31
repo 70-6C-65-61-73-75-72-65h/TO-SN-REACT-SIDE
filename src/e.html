@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -7,9 +7,9 @@
     <title>Document</title>
 </head>
 <body>
-    <!-- <a href="/" onclick="return false">Нажми здесь</a>
+    <a href="/" onclick="return false">Нажми здесь</a>
 или
-<a href="/" onclick="event.preventDefault()">здесь</a> -->
+<a href="/" onclick="event.preventDefault()">здесь</a>
 
     <ul id="menu" class="menu">
         <li><a href="file:///C:/Users/maxul/my-app/src/html">HTML</a></li>
@@ -20,27 +20,223 @@
 </body>
 
 <script>
+    "use strict";
+    let prik = {z:{xz1:2, a:2}}
+    let newKeys = {a:1, f:2, tr:33, z:{a:12}}
+    prik = {...prik, 
+        ...newKeys, 
+        z: {...prik.z, ...newKeys.z}}
+    
+
+    // let prik = 'contacts_large'
+    // console.log(prik.split('_')[1])
+    console.log(prik);
+    
     // let followed = 'kek';
     // let notfollowed = null;
-    let d = `{'large': 'https://i.pinimg.com/originals/03/4d/64/034d64236d0bff434c25ae14b76c205b.jpg', 'small': 'https://img.etimg.com/thumb/msid-69037337,width-300,imgsize-144736,resizemode-4/oldrich-muller.jpg'}`;
-    console.log(`${d}`);
-    d = d.replace(/\'/g, '\"')
-    console.log(d);
-    d = JSON.parse(d);
-    console.log(d['large']);
-    console.log(d);
-    // console.log(`UPDATE items SET ${ ('followed'!== null) ? ("'followed' = ${followed}") : null} WHERE id =;`);
-    // console.log(`UPDATE items SET ${'followed'= notfollowed || null} WHERE id =;`;)
-    // let menu = document.getElementById('menu');
-    // menu.onclick = function (event) {
-    //     if (event.target.nodeName != 'A') return;
+    // let d = `{'large': 'https://i.pinimg.com/originals/03/4d/64/034d64236d0bff434c25ae14b76c205b.jpg', 'small': 'https://img.etimg.com/thumb/msid-69037337,width-300,imgsize-144736,resizemode-4/oldrich-muller.jpg'}`;
+    // console.log(`${d}`);
+    // d = d.replace(/\'/g, '\"')
+    // console.log(d);
+    // d = JSON.parse(d);
+    // console.log(d['large']);
+    // console.log(d);
+    // // console.log(`UPDATE items SET ${ ('followed'!== null) ? ("'followed' = ${followed}") : null} WHERE id =;`);
+    // // console.log(`UPDATE items SET ${'followed'= notfollowed || null} WHERE id =;`;)
+    // // let menu = document.getElementById('menu');
+    // // menu.onclick = function (event) {
+    // //     if (event.target.nodeName != 'A') return;
 
-    //     let href = event.target.getAttribute('href');
-    //     // alert(href); // может быть подгрузка с сервера, генерация интерфейса и т.п.
-    //     window.history.pushState({param: 'Value'}, '', href);
+    // //     let href = event.target.getAttribute('href');
+    // //     // alert(href); // может быть подгрузка с сервера, генерация интерфейса и т.п.
+    // //     window.history.pushState({param: 'Value'}, '', href);
 
-    //     return false; // отменить действие браузера (переход по ссылке)
-    // };
+    // //     return false; // отменить действие браузера (переход по ссылке)
+    // // };
 </script>
 
+</html>  -->
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>first-child</title>
+  <style type="text/css">
+    i:first-child {
+     color: red; /* Красный цвет текста */
+    }
+
+
+    tr:first-of-type{
+        color:blue;
+    }
+    td:first-of-type{
+        color:rgb(155, 27, 27);
+    }
+
+    table { 
+    width: 100%; /* Ширина таблицы */
+    border-collapse: collapse; /* Убираем двойные границы */
+    /*border-spacing: 0; /* Расстояние между ячейками */
+    text-align: center;
+   }
+   td {
+    border: 1px solid #333; /* Параметры рамки */
+    /*padding: 3px; /* Поля в ячейках */
+    padding: 1vh 0 0 5vw;
+   }
+   td:not(:first-of-type) {
+    border-left: 1vh double #333; /* Граница слева */ 
+   }
+   td:first-of-type {
+    background: silver; /* Цвет фона */ 
+   }
+   td:nth-last-of-type(2n+1) {
+    background: grey; /* Цвет фона */
+   }
+
+
+
+
+    .subelem:first-of-type{
+        color:red;
+    }
+
+    .elem:first-of-type{
+        color:blueviolet;
+    }
+
+    .pizda > li a:first-child:nth-last-child(n+2){
+        color:red
+
+    }
+
+  </style>
+ </head>
+ <body>
+    <!-- <p><h1>dd</h1><h1>dd2</h1></p>   -->
+   <!-- <p><b>Lorem ipsum</b> dolor sit amet, <b>consectetuer</b> , <p><h1>dd1</h1><h1>dd1<h2>dd2</h2><h2>dd2</h2></h1><h1>dd1<h2>dd2</h2><h2>dd2</h2></h1><h1>dd1</h1></p>  <p><i>consectetuer</i> , <i>consectetuer</i> , <i>consectetuer</i> </p>
+   adipiscing <b>elit</b>, sed diem nonummy nibh euismod tincidunt ut lacreet 
+   dolore magna aliguam erat volutpat.</p>
+   <p><b>Ut wisis enim</b> ad minim veniam, <b>quis nostrud</b> , <h1>dd</h1> <p><i>consectetuer</i> , <i>consectetuer</i> , <i>consectetuer</i> </p>
+   exerci tution ullamcorper suscipit lobortis nisl ut aliquip ex ea <b>commodo 
+   consequat</b>.</p> -->
+   <table>
+       <tr><td>1</td><td>2</td><td>1</td><td>2</td></tr>
+       <tr><td>1</td><td>2</td><td>1</td><td>2</td></tr>
+       <tr><td>1</td><td>2</td><td>1</td><td>2</td></tr>
+       <tr><td>1</td><td>2</td><td>1</td><td>2</td></tr>
+   </table>
+   <div>
+       <div class="elem">
+           <div class="subelem">Lorem, ipsum dolor</div> sit<div class="subelem">amet consectetur adipisicing elit.</div>
+       </div> 1222
+       <div class="elem"> 1222
+            <div class="subelem">Consectetur sit atque laboriosam sunt ab</div>  placeat eligendi obcaecati<div class="subelem">eum.</div>
+       </div>
+       <div class="elem">
+            <div class="subelem">Deserunt sed iure est facere.</div> <div class="subelem">Culpa ipsa nobis reiciendis vel</div>
+        </div>
+        <div class="elem">
+            <div class="subelem">recusandae </div> <div class="subelem">obcaecati.</div>
+        </div>
+   </div>
+
+
+   <div class='pizda'>
+
+    <li><a href="#">item a lonng submenu</a></li>
+    <li><a href="#">item a lonng submenu</a></li>
+    <li><a href="#">item</a>
+      <ul>
+        <li><a href="#">Ray</a></li>
+        <li><a href="#">Veronica</a></li>
+        <li><a href="#">Bushy</a></li>
+        <li><a href="#">Havoc</a></li>
+      </ul>
+    </li>
+    <li><a href="#">item boi</a><div>ee boi</div></li>
+    <li><a href="#">item boi</a><div>ee boi2</div></li>
+    <li><a href="#">item boi</a><div>ee boi3</div><div>ee boi3</div></li>
+   </div>
+ </body>
 </html>
+
+
+
+
+
+
+
+<!-- 
+
+<body>
+    
+    <nav>
+        <ul class="nav">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Portfolio</a>
+            <ul>
+              <li><a href="#">item</a></li>
+              <li><a href="#">item</a></li>
+              <li><a href="#">item</a></li>
+              <li><a href="#">item</a>
+                <ul>
+                    <li><a href="#">item2</a></li>
+                    <li><a href="#">item2</a></li>
+                    <li><a href="#">item2</a></li>
+                    <li><a href="#">item2</a>
+                        <ul>
+                            <li><a href="#">item3</a></li>
+                            <li><a href="#">item3</a></li>
+                            <li><a href="#">item3</a></li>
+                            <li><a href="#">item3</a></li>
+                            <li><a href="#">item3</a></li>
+                            <li><a href="#">item3</a></li>
+                            <li><a href="#">item3</a></li>
+                            <li><a href="#">item3</a>
+                                <ul>
+                                    <li><a href="#">item2</a></li>
+                                    <li><a href="#">item2</a></li>
+                                    <li><a href="#">item2</a></li>
+                                    <li><a href="#">item2</a></li>
+                                </ul> </li>
+                          </ul>
+                    </li>
+                  </ul>
+            </li>
+            </ul>
+          </li>
+          <li><a href="#">Resume</a>
+            <ul>
+              <li><a href="#">item a lonng submenu</a></li>
+              <li><a href="#">item</a>
+                <ul>
+                  <li><a href="#">Ray</a></li>
+                  <li><a href="#">Veronica</a></li>
+                  <li><a href="#">Bushy</a></li>
+                  <li><a href="#">Havoc</a></li>
+                </ul>
+              </li>
+              <li><a href="#">item</a></li>
+              <li><a href="#">item</a></li>
+            </ul>
+          </li>
+          <li><a href="#">Download</a></li>
+          <li><a href="#">Rants</a>
+            <ul>
+              <li><a href="#">item</a></li>
+              <li><a href="#">item</a></li>
+              <li><a href="#">item</a></li>
+              <li><a href="#">item</a></li>
+            </ul>
+          </li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </nav>
+
+</body> -->

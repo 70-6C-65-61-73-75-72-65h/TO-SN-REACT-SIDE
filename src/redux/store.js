@@ -38,7 +38,7 @@ let store = {
     },
 
     getState() {
-        debugger;
+        // debugger;
         return this._state;
     },
     subscribe(observer) {

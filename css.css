@@ -1,0 +1,63 @@
+.chatSettings {
+    grid-area: chatSettings;
+    position: relative;
+    /*position: relative; /* относительно исходного места (тоесть там где его расположили гриды (абсолют - возьмет край родительского елемента 
+    ( ибо в его родителе нет тоже указания релайтив), а именно левый край родителя как точка отсчета) */
+}
+
+.chatSettings > ul:hover li {
+    display: grid;
+    position: absolute;
+}
+.chatSettings > ul > li {
+    display: none;
+}
+
+.chatSettings > ul > li:hover ul {
+    display: grid;
+    color: white;
+    list-style: none;
+    /* top:100%;
+    padding-top: 5vw; */
+    /* position: absolute; */
+    /* position: absolute;  */
+    /* position: absolute; */
+    /* position: absolute; */
+    padding-left: 5vw;
+    /* padding: 0 0 0 5vw; */
+    left: 10vh;
+}
+
+.chatSettings > ul > li > ul {
+    display: none;
+}
+
+
+
+
+.member > a{ /*menu list li*/
+    display: grid;
+    grid-template-areas:
+    "chatMemberPhoto"
+    "chatMemberName";
+    grid-template-rows: 3vh 3vh;
+    grid-template-columns: 4vw;
+    text-align: right;
+}
+
+.memberName {
+    grid-area: chatMemberName;
+    /* color: black; */
+    font-weight: bold;
+    font-size: 2vh;
+}
+
+.memberPhoto {
+    grid-area: chatMemberPhoto;
+} 
+
+.memberPhoto > img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%; /*инече будет более 10 проц от обжект фита (тоесть рамок что заданы в родителе ( внашем случае grid-template-rows: 3vh 3vh)*/
+}

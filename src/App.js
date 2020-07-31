@@ -1,36 +1,103 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import Header from './components/Header/Header';
 import Navbar from './components/Navbar/Navbar';
 // import Profile from './components/Profile/Profile';
-import {Route} from "react-router-dom";
-import DialogsContainer from './components/Dialogs/DialogsContainer';
+import { Route, withRouter } from "react-router-dom";
+import ChatsContainer from './components/Chats/ChatsContainer';
 import UsersContainer from './components/Users/UsersContainer';
-import ProfileContainer from './components/Profile/ProfileContainer';
-import SignUp from './components/Auth/SignUp';
-import LoginContainer from './components/Auth/LoginContainer';
+import Profile from './components/Profile/Profile';
+import Login from './components/Login/Login';
+import UpdateProfile from './components/Profile/UpdateDeleteProfile/UpdateProfile';
+import Preloader from './components/common/Preloader/Preloader';
+import { initializeApp } from './redux/app-reducer';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
+import ChatDetail from './components/Chats/ChatItem/ChatDetail';
 
-const App = () => {
+// import SignUpContainer from './components/Auth/SignUpContainer';
+// import Logout from './components/Auth/Logout';
 
-    return (
-            <div className='app-wrapper'>
-                <Header />
-                <Navbar />
-                <div className='app-wrapper-content'>
-                    <Route path='/dialogs'
-                           render={  () => <DialogsContainer/> }/>
-                    <Route path='/profile/:userId?'
-                           render={ () => <ProfileContainer/> }/>
-                    <Route path='/users'
-                            render = {() => <UsersContainer/>} />
+// import Cookies from 'js-cookie';
+// import { login } from './redux/auth-reducer';
 
-                    <Route path='/login'
-                            render = {() => <LoginContainer/>} />
-                    <Route path='/signup'
-                            render = {() => <SignUp/>} />
+
+// // if not initilized ( cant get getAuthData - )
+// class AppContainer extends React.Component{
+//         componentDidMount() {
+//                 // проверка на обновление токена, чтобы не было запросов на других страницахс не валидным токеном и не перебрасывало в итоге на логин форм - а потом обратно на профайл
+//                 this.props.initializeApp();
+//         }
+//         render(){
+//                 if((!this.props.initialized)) return <Preloader/>
+//                 return (<div className='app-wrapper'>
+//                         <Header />
+//                         <Navbar />
+//                         <div className='app-wrapper-content'>
+//                         <App/>
+//                         </div>
+//                 </div>)
+//         }
+// }
+
+
+const App = React.memo((props) => {
+        console.log('rerender')
+        console.log(props.initialized)
+        useEffect(() => {props.initializeApp()}, [])
+        if((!props.initialized)) return <Preloader/>
+        return (
+                <div className='whole-app-page-wrapper'>
+                <div className='app-wrapper'>
+                        <Header />
+                        <Navbar />
+                        <div className='app-wrapper-content'>
+                        <Route path='/profile/:userId?'
+                                        render={() => <Profile />} />
+                        <Route path='/profile_update'
+                                render={() => <UpdateProfile />} />
+                        <Route path='/login' render={() => <Login />} />
+                        <Route path='/users'
+                                render={() => <UsersContainer />} />
+                        <Route exact path='/chats'
+                                render={() => <ChatsContainer />} />
+                        <Route path='/chats/:chatType/:name?'
+                                render={() => <ChatDetail />} />
+                        </div>
                 </div>
-            </div>
-    )
-}
+                </div>
 
-export default App;
+        )
+})
+
+const mapStateToProps = (state) => ({
+        initialized: state.app.initialized,
+});
+
+export default compose(
+        withRouter,
+        connect(mapStateToProps, {initializeApp})
+ )(App);
+
+
+//  {/*<div className='app-wrapper'>
+//                         <Header />
+//                         <Navbar />
+//                         <div className='app-wrapper-content'>*/}
+//                                 {/* <Route path='/dialogs'
+//                                         render={() => <DialogsContainer />} /> */}
+//                                         <Route path='/profile/:userId?'
+//                                         render={() => <Profile />} />
+//                                 <Route path='/profile_update'
+//                                         render={() => <UpdateProfile />} />
+//                                 {/* <Route path='/users'
+//                                         render={() => <UsersContainer />} /> */}
+
+//                                 <Route path='/login'
+//                                         render={() => <Login />} />
+//                                 {/* <Route path='/signup'
+//                                         render={() => <SignUpContainer />} /> */}
+//                                 {/* <Route path='/logout'
+//                                         render={() => <Logout />} /> */}
+//                         {/*</div>
+//                 </div>*/}
