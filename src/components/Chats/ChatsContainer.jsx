@@ -48,7 +48,7 @@ import { compose } from 'redux';
 import withAuthRedirect from '../../hoc/WithAuthRedirect';
 import { connect } from 'react-redux';
 import { setCurrentChatData, unSetCurrentChatData, getChats, 
-        clearChatMyLocal, clearChatMyGlobal, clearChatAllLocal, clearChatAllGlobal, createConversation, createDialog, requestUsersForChat, renameChatRequest } from '../../redux/chats-reducer';
+        clearChatMyLocal, clearChatMyGlobal, clearChatAllLocal, clearChatAllGlobal, createConversation, createDialog, requestUsersForChat, renameChatRequest, setChatPhotoRequest, addMember, deleteChatRequest } from '../../redux/chats-reducer';
 import Preloader from '../common/Preloader/Preloader';
 import ChatItem from './ChatItem/ChatItem';
 import chatsStyles from './Chats.module.css';
@@ -117,6 +117,10 @@ const ChatsContainer = (props) => {
                 // currentChatDataFetching={props.currentChatDataFetching} 
                 clearChatMyLocal={props.clearChatMyLocal} clearChatMyGlobal={props.clearChatMyGlobal} clearChatAllLocal={props.clearChatAllLocal} clearChatAllGlobal={props.clearChatAllGlobal}
                 renameChatRequest={props.renameChatRequest}
+                setChatPhotoRequest={props.setChatPhotoRequest}
+                addMember={props.addMember}
+                snusers={props.snusers}
+                deleteChatRequest={props.deleteChatRequest}
                 // history={props.history}
                 // isUnmount={props.isUnmount}
                 />);
@@ -133,8 +137,9 @@ const ChatsContainer = (props) => {
         <div className={chatsStyles.chats}>
             <div className={chatsStyles.chats_header}>Chats</div>
             <div className={chatsStyles.createChat}>
-            <div className={chatsStyles.createChatHeader}>Create Conversation</div>
-            <CreateChatReduxForm onSubmit={onSubmit} snusers={props.snusers} myUserId={props.myUserId} />
+            <div className={chatsStyles.createChatHeader}>Create Conversation
+                <CreateChatReduxForm onSubmit={onSubmit} snusers={props.snusers} myUserId={props.myUserId} />
+            </div>
             </div>
                 <div className={chatsStyles.chatsItems}>
                     {chatsElements}
@@ -150,7 +155,7 @@ let mapStateToProps = (state) => ({
     isFetching: state.chatsPage.isFetching,
     isUnmount: state.chatsPage.isUnmount,
     myUserId: state.auth.userId,
-    snusers: state.chatsPage.usersToSelect
+    snusers: state.chatsPage.usersToSelect, // по-сути должны быть все)))))))) TODO но асинхронно подгружатся
     // chatPhotoSmall: selectChatPhotoSmall(state)
     // userId: state.auth.userId,
 })
@@ -160,7 +165,7 @@ export default compose(
     connect(mapStateToProps, {getChats, setCurrentChatData, unSetCurrentChatData,
         clearChatMyLocal, clearChatMyGlobal, clearChatAllLocal, clearChatAllGlobal,
         createDialog, createConversation, requestUsersForChat,
-        renameChatRequest}),
+        renameChatRequest, addMember, setChatPhotoRequest, deleteChatRequest}),
     withRouter
 )(ChatsContainer);
 

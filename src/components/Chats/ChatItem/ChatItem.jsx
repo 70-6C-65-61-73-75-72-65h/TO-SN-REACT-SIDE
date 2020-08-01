@@ -3,11 +3,59 @@ import s from './../Chats.module.css';
 import { NavLink } from "react-router-dom";
 import { convertTime } from '../../common/utils/convertTime';
 import Preloader from '../../common/Preloader/Preloader';
-import { ReduxFormSnippet, createField, Input } from '../../common/FormsControls/FormsControls';
-import { maxLength200 } from '../../../utils/validators/validators';
+import { ReduxFormSnippet, createField, Input, DropDownSelect } from '../../common/FormsControls/FormsControls';
+import { maxLength200, maxLength1000 } from '../../../utils/validators/validators';
 import { reduxForm } from 'redux-form';
+import backupQuotes from '../../common/utils/backupQuotes';
 
 
+////////////////////
+const AddChatMemberForm = (props) => {
+    const { handleSubmit, pristine, reset, submitting, error, snusers, chatUsersIds } = props // chatUsersIds - list of ids from chat members
+    return (
+        <form onSubmit={handleSubmit} className={s.addMemberForm}>
+            {createField('DropDownSelect', 'dropDownSelect', DropDownSelect, null, {people:  snusers.filter(snuser => !chatUsersIds.includes(snuser.userId))})}
+            <ReduxFormSnippet  pristine={pristine} reset={reset} submitting={submitting} error={error} sumbitButtonName={'Add Member'}/>
+        </form>
+    )
+}
+
+const AddChatMemberFormRedux = reduxForm({form: 'addChatMember'})(AddChatMemberForm)
+
+const AddChatMember = ({addMember, chatTypeId, chatId, snusers, chatUsersIds}) => {
+    // console.log('chatUsersIds')
+    // console.log(chatUsersIds)
+    const onSubmit = (formData) => {
+        addMember(chatTypeId, chatId, formData['dropDownSelect'])
+    }
+    return  <AddChatMemberFormRedux onSubmit={onSubmit} snusers={snusers} chatUsersIds={chatUsersIds}/>
+}
+////////////////////
+
+////////////////////
+const ChangeChatPhotoForm  = (props) => {
+    const { handleSubmit, pristine, reset, submitting, error } = props
+    return (
+        <form onSubmit={handleSubmit} className={s.changeChatPhotoForm}>
+            {createField('Photo', 'photo', Input, [maxLength1000])}
+            <ReduxFormSnippet  pristine={pristine} reset={reset} submitting={submitting} error={error} sumbitButtonName={'Change Photo'}/>
+        </form>
+    )
+}
+
+const ChangeChatPhotoFormRedux = reduxForm({form: 'chageChatPhoto'})(ChangeChatPhotoForm)
+
+
+const ChangeChatPhoto = ({setChatPhotoRequest, chatTypeId, chatId}) => {
+    const onSubmit = (formData) => { // or JSON.stringify
+        let newPhotoObject = backupQuotes({'large': null, 'small': formData['photo']})
+        setChatPhotoRequest(chatTypeId, chatId, newPhotoObject)
+    }
+    return  <ChangeChatPhotoFormRedux onSubmit={onSubmit}/>
+}
+////////////////////
+
+////////////////////
 const RenameChatForm = (props) => {
     const { handleSubmit, pristine, reset, submitting, error } = props
     return (
@@ -18,7 +66,7 @@ const RenameChatForm = (props) => {
     )
 }
 
-const RenameChatFormRedux = reduxForm({form: 'renameChatForm'})(RenameChatForm)
+const RenameChatFormRedux = reduxForm({form: 'renameChat'})(RenameChatForm)
 
 const RenameChat = ({renameChatRequest, chatTypeId, chatId}) => {
     const onSubmit = (formData) => {
@@ -26,10 +74,12 @@ const RenameChat = ({renameChatRequest, chatTypeId, chatId}) => {
     }
     return  <RenameChatFormRedux onSubmit={onSubmit}/>
 }
+////////////////////
+
 
 const Member = ({ member }) => {
     return (
-        <div className={`${s.member} ${s.subElem}`}>
+        <div className={`${s.member} ${s.subElem2}`}>
             <NavLink to={'/profile/' + member.id}>
                 <div className={s.memberName}>{member.name}</div>
                 <div className={s.memberPhoto}><img src={member.photos.small} alt='Ava' /></div>
@@ -54,7 +104,12 @@ const LastMessage = ({ sended, body, authorName }) => {
 
 const ChatItem = ({ lastMessage, getCountOfNewGlobalMsgs, members, chatType, name, setCurrentChatData, chatTypeId, chatId, chatPhotoSmall, isFetching, 
                     clearChatMyLocal, clearChatMyGlobal, clearChatAllLocal, clearChatAllGlobal,
-                    renameChatRequest }) => {
+                    renameChatRequest, deleteChatRequest, addMember, setChatPhotoRequest, snusers }) => {
+
+
+    // console.log('chatUsersIds')
+    // console.log(members)
+    // console.log(members.map(member => member.id))
 
     const unmout = () => {
         setCurrentChatData(chatTypeId, chatId)
@@ -65,7 +120,12 @@ const ChatItem = ({ lastMessage, getCountOfNewGlobalMsgs, members, chatType, nam
         method(chatTypeId, chatId)
     }
 
+    // const putChatByMethod = (method, putData) => {
+    //     method(chatTypeId, chatId, putData)
+    // }
+
     let path = `/chats/${chatType}/${name}/`
+    let chatUsersIds = members.map(member => member.id)
     members = members.map(member => <Member member={member} key={member.id} />)
     if(isFetching) return <Preloader />
     return (
@@ -103,20 +163,56 @@ const ChatItem = ({ lastMessage, getCountOfNewGlobalMsgs, members, chatType, nam
                         </div>
                         <div className={s.renameChatHeader}>
                             rename
-                            <div className={s.renameChatItem}>
+                            { chatTypeId === 1 && <div className={s.renameChatItem}>
                                 <RenameChat renameChatRequest={renameChatRequest} chatTypeId={chatTypeId} chatId={chatId}/>
-                            </div>
+                            </div>}
                             
                         </div>
                         <div className={s.smthElseHeader}>
                             other operations
                             <div className={s.smthElseList}>
-                                        <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => clearChatByMethod(clearChatMyLocal)}>Clear My Messages Locally</button></div>
-                                        <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => clearChatByMethod(clearChatMyGlobal)}>Clear My Messages Globally</button></div>
-                                        <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => clearChatByMethod(clearChatAllLocal)}>Clear All Messages Locally</button></div>
-                                        <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => clearChatByMethod(clearChatAllGlobal)}>Clear All Messages Globally</button></div>
+                                    <div className={`${s.subElem} ${s.infoItem}`}>
+                                        set photo
+                                        { chatTypeId === 1 && <div className={s.changePhotoChat}>
+                                            <ChangeChatPhoto setChatPhotoRequest={setChatPhotoRequest} chatTypeId={chatTypeId} chatId={chatId}/>
+                                        </div>}
+                                    </div>
+                                    <div className={`${s.subElem} ${s.infoItem}`}>
+                                        add member
+                                        { chatTypeId === 1 &&
+                                        <div className={s.addMemberItem}>
+                                            <AddChatMember addMember={addMember} snusers={snusers} chatUsersIds={chatUsersIds} chatTypeId={chatTypeId} chatId={chatId}/>
+                                        </div>}
+                                    </div>
+                                    <div className={`${s.deleteChat} ${s.subElem} ${s.infoItem}`}><button onClick={() => clearChatByMethod(deleteChatRequest)}>DELETE CHAT</button></div>
+                                    {/* other methods in chat detail */}
+                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(toogleMemberStatus)}>toogleMemberStatus</button></div> */}
+                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(addMember)}>addMember</button></div> */}
+                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(removeMember)}>removeMember</button></div> */}
+                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(removeMemberMsgs)}>removeMemberMsgs</button></div> */}
+                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(removeOneMemberMsg)}>removeOneMemberMsg</button></div> */}
+                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(setChatPhotoRequest)}>New Chat Photo</button></div> */}
+                                    
                             </div>
                         </div>
+
+
+                        {/* <div className={s.changePhotoChatHeader}>
+                            set chat photo
+                            { chatTypeId === 1 && <div className={s.changePhotoChat}>
+                                <ChangeChatPhoto setChatPhotoRequest={setChatPhotoRequest} chatTypeId={chatTypeId} chatId={chatId}/>
+                            </div>}
+                            
+                        </div> */}
+                        {/* <div className={s.addMemberHeader}>
+                            set chat photo
+                            <div className={s.addMemberItem}>
+                                <AddChatMember addMember={addMember} snusers={snusers} chatUsersIds={members.map(member => member.userId)} chatTypeId={chatTypeId} chatId={chatId}/>
+                            </div>
+                            
+                        </div> */}
+
+
                     </div>
                 </div>
         </div>)

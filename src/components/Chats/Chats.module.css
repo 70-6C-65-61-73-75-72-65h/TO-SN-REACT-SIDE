@@ -20,6 +20,7 @@ background: transparent;
 .chats:hover ::-webkit-scrollbar-thumb {
 background: rgb(255, 255, 255); 
 border-radius: 0 1vh 1vh 0;
+/* padding-left: 18vh; */
 }
 
 /* Handle on hover */
@@ -67,9 +68,9 @@ background: red;
 
     display: grid;
     grid-template-areas:
-    "createChatHeader"
-    "createChatForm";
-    grid-template-rows: 1fr 6fr;
+    "createChatHeader";
+    /* "createChatForm"; */
+    grid-template-rows: 1fr;
 }
 
 .createChatHeader {
@@ -77,18 +78,24 @@ background: red;
     position: absolute;
     height: 100%;
 }
-
-.createChatForm {
+.createChatHeader:hover .createChatForm {
+    display: block;
     color: red;
     position: absolute;
     height: 400%;
+    background-color: brown;
+    top: 5vh;
+    width: max-content;
+    height: max-content;
+    /* left: 50vw; */
+}
+
+.createChatForm {
+    display: none;
 }
 
 
 
-.renameChatForm {
-
-}
 
 /* .chats .chatsItems {
     grid-area: chatsItems;
@@ -285,11 +292,14 @@ background: red;
 .chatSettings > div > div:hover .smthElseList {
     display: block;
     position: absolute;
-    left: 4vw;
+    right: 7vw;
     top: 0vh;
-    padding: 0 0 0 4vw;
+    padding: 0 6vw 0 0;
 
-    overflow: hidden;
+    /* overflow: hidden; */
+    /* width: 100%; */
+    /* height: inherit; */
+    height: 100%;
     overflow-y: scroll;
     grid-template-areas:
     "infoItem";
@@ -306,8 +316,22 @@ background: red;
 
 .subElem {
     position: relative;
+    left: 6vw;
+} 
+
+.subElem > button {
+    font-family: italic;
+}
+
+.subElem2 {
+    position: relative;
     left: -3vw;
 } 
+
+.subElem2 > button {
+    font-family: inherit;
+}
+
 
 .infoItem {
     display: grid;
@@ -316,12 +340,17 @@ background: red;
 } 
 
 
+.deleteChat > button {
+    color:red;
+    font-weight: 600;
+}
+
 .chatSettings > div > div:hover .renameChatItem {
     display: block;
     position: absolute;
-    right: 4vw;
+    right: 6vw;
     top: 0vh;
-    /* padding: 0 0 0 0; */
+    padding: 0 2vw 0 0;
 
     overflow: hidden;
     overflow-y: scroll;
@@ -334,7 +363,19 @@ background: red;
     display: none;
 }
 
-
+.renameChatForm {
+    border: solid black 0.3vh;
+    /* background-color: red; */
+    /* background-color: 0,0,0, 0.9; */ 
+/* 'https://pluspng.com/img-png/questions-png-hd-question-mark-wallpaper-question-mark-wallpaper-mark-hd-png-1600.png' */
+    /* background-image: url('reameChat.png'); */
+    background-color: 0,0,0, 0.9;
+    /* width: 20vh;
+    height: 20vh; */
+    /* border-radius: 30% 30% 30% 30%; */
+}
+ 
+/* /////////////////////////////////////////////
 /*
 
 .chatSettings {
