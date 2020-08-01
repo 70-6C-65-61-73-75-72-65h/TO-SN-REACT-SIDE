@@ -48,15 +48,14 @@ import { compose } from 'redux';
 import withAuthRedirect from '../../hoc/WithAuthRedirect';
 import { connect } from 'react-redux';
 import { setCurrentChatData, unSetCurrentChatData, getChats, 
-        clearChatMyLocal, clearChatMyGlobal, clearChatAllLocal, clearChatAllGlobal, createConversation, createDialog, requestUsersForChat } from '../../redux/chats-reducer';
+        clearChatMyLocal, clearChatMyGlobal, clearChatAllLocal, clearChatAllGlobal, createConversation, createDialog, requestUsersForChat, renameChatRequest } from '../../redux/chats-reducer';
 import Preloader from '../common/Preloader/Preloader';
 import ChatItem from './ChatItem/ChatItem';
 import chatsStyles from './Chats.module.css';
 import { selectChats } from '../../redux/chats-selector';
 import { withRouter } from 'react-router-dom';
 import { reduxForm } from 'redux-form';
-import DropDownSelect, { createField, Input } from '../common/FormsControls/FormsControls';
-import styles from '../common/FormsControls/FormsControls.module.css'
+import { DropDownSelect, createField, Input, ReduxFormSnippet } from '../common/FormsControls/FormsControls';
 import { maxLength200 } from '../../utils/validators/validators';
 
 
@@ -66,18 +65,7 @@ const CreateChatForm = (props) => {
         <form onSubmit={handleSubmit} className={chatsStyles.createChatForm}>
             {createField('DropDownSelect', 'dropDownSelect', DropDownSelect, null, {people: snusers.filter(snuser => snuser.userId !== myUserId)})}
             {createField('Name', 'name', Input, [maxLength200])}
-            {
-            error && 
-            <div className={styles.formSummaryError}>
-                {error}
-            </div>
-            }
-            <div className=''>
-                <button type='submit' disabled={pristine || submitting} >Create Chat</button>
-            </div>
-            <div className=''>
-                <button type='button' disabled={pristine || submitting} onClick={reset}>Clear</button>
-            </div>
+            <ReduxFormSnippet  pristine={pristine} reset={reset} submitting={submitting} error={error} sumbitButtonName={'Create Chat'}/>
         </form>
     )
 }
@@ -128,6 +116,7 @@ const ChatsContainer = (props) => {
                 isFetching={props.isFetching} 
                 // currentChatDataFetching={props.currentChatDataFetching} 
                 clearChatMyLocal={props.clearChatMyLocal} clearChatMyGlobal={props.clearChatMyGlobal} clearChatAllLocal={props.clearChatAllLocal} clearChatAllGlobal={props.clearChatAllGlobal}
+                renameChatRequest={props.renameChatRequest}
                 // history={props.history}
                 // isUnmount={props.isUnmount}
                 />);
@@ -170,7 +159,8 @@ export default compose(
     withAuthRedirect,
     connect(mapStateToProps, {getChats, setCurrentChatData, unSetCurrentChatData,
         clearChatMyLocal, clearChatMyGlobal, clearChatAllLocal, clearChatAllGlobal,
-        createDialog, createConversation, requestUsersForChat}),
+        createDialog, createConversation, requestUsersForChat,
+        renameChatRequest}),
     withRouter
 )(ChatsContainer);
 

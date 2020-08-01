@@ -307,7 +307,120 @@ export const createChatRequest = (snusers, name) => async(dispatch) => {
 export const createConversation = (snusers, name) => createChatRequest(snusers, name)
 export const createDialog = (snusers, name=null) => createChatRequest(snusers, name)
 
+
+
+export const deleteChatRequest = (chatTypeId, chatId) => async(dispatch) => {
+    let response = await chatsAPI.deleteChat(chatTypeId, chatId)
+    if(response.data === ''){
+        console.log('chat succ deleted')
+    } else {
+        let message = response.data.messages.length  ? response.data.messages[0] : 'Some error';
+        console.log('deleteChatRequest error: ' + message)
+    }
+}
+
+export const renameChatRequest = (chatTypeId, chatId, newChatName, putType='rename') => async(dispatch) => {
+    let response = await chatsAPI.renameChat(chatTypeId, chatId, putType, newChatName)
+    debugger
+    if(response.data.resultCode === 0){
+        console.log('chat renamed:'+ response.data.data.renamed)
+    } else {
+        let message = response.data.messages.length  ? response.data.messages[0] : 'Some error';
+        dispatch(stopSubmit('renameChat', {_error: message}));
+    }
+}
+
+
+
+// athunku // thunku // athunkrf
+
+
+// all the same
+export const toogleMemberStatus = (chatTypeId, chatId, userId, putType='toogleMemberStatus') => async(dispatch) => {
+    // let response = await chatsAPI.toogleMemberStatusForConversation(chatTypeId, chatId, putType, userId)
+    // if(response.data.resultCode === 0){
+    //     console.log('member status toggled: ' + response.data.data.toggled)
+    // } else {
+    //     let message = response.data.messages.length  ? response.data.messages[0] : 'Some error';
+    //     console.log('toogleMemberStatusForConversation error: '+ message)
+    // }
+    await chatPutParts(chatTypeId, chatId, userId, putType, chatsAPI.toogleMemberStatusForConversation.bind(chatsAPI), 'member status toggled: ', 'toggled', 'toogleMemberStatusForConversation error: ')
+}
+
+export const addMember = (chatTypeId, chatId, userId, putType='addMember') => async(dispatch) => {
+    // let response = await chatsAPI.addMemberForConversation(chatTypeId, chatId, putType, userId)
+    // if(response.data.resultCode === 0){
+    //     console.log('member added: ' + response.data.data.memberAdded)
+    // } else {
+    //     let message = response.data.messages.length  ? response.data.messages[0] : 'Some error';
+    //     console.log('addMember error: '+ message)
+    // }
+    await chatPutParts(chatTypeId, chatId, userId, putType, chatsAPI.addMemberForConversation.bind(chatsAPI), 'member added: ', 'memberAdded', 'addMember error: ')
+}
+
+
+export const removeMember = (chatTypeId, chatId, userId, putType='removeMember') => async(dispatch) => {
+    // let response = await chatsAPI.removeMemberFromConversation(chatTypeId, chatId, putType, userId)
+    // if(response.data.resultCode === 0){
+    //     console.log('member removed: ' + response.data.data.memberRemoved)
+    // } else {
+    //     let message = response.data.messages.length  ? response.data.messages[0] : 'Some error';
+    //     console.log('removeMember error: '+ message)
+    // }
+    await chatPutParts(chatTypeId, chatId, userId, putType, chatsAPI.setChatPhoto.bind(chatsAPI), 'member removed: ', 'memberRemoved', 'removeMember error: ')
+}
+
+
+export const removeMemberMsgs = (chatTypeId, chatId, userId, putType='removeMemberMsgs') => async(dispatch) => {
+    // let response = await chatsAPI.removeMemberMsgsForConversation(chatTypeId, chatId, putType, userId)
+    // if(response.data.resultCode === 0){
+    //     console.log('member msgs removed: ' + response.data.data.memberMsgsRemoved)
+    // } else {
+    //     let message = response.data.messages.length  ? response.data.messages[0] : 'Some error';
+    //     console.log('removeMemberMsgs error: '+ message)
+    // }
+    await chatPutParts(chatTypeId, chatId, userId, putType, chatsAPI.removeMemberMsgsForConversation.bind(chatsAPI), 'member msgs removed: ', 'memberMsgsRemoved', 'removeMemberMsgs error: ')
+}
+
+export const removeOneMemberMsg = (chatTypeId, chatId, userId, putType='removeOneMemberMsg') => async(dispatch) => {
+    // let response = await chatsAPI.removeOneMemberMsgForConversation(chatTypeId, chatId, putType, userId)
+    // if(response.data.resultCode === 0){
+    //     console.log('member msg removed: ' + response.data.data.memberMsgRemoved)
+    // } else {
+    //     let message = response.data.messages.length  ? response.data.messages[0] : 'Some error';
+    //     console.log('removeOneMemberMsg error: '+ message)
+    // }
+    await chatPutParts(chatTypeId, chatId, userId, putType, chatsAPI.removeOneMemberMsgForConversation.bind(chatsAPI), 'member msg removed: ', 'memberMsgRemoved', 'removeOneMemberMsg error: ')
+}
+
+
+export const setChatPhotoRequest = (chatTypeId, chatId, newChatPhoto, putType='setChatPhoto') => async(dispatch) => {
+    await chatPutParts(chatTypeId, chatId, newChatPhoto, putType, chatsAPI.setChatPhoto.bind(chatsAPI), 'chat photo changed: ', 'isChatPhotoChanged', 'setChatPhotoRequest error: ')
+}
+// all the same
+
+const chatPutParts = async(chatTypeId, chatId, newChatPhoto, putType, apiMethod, onSuccStr, onSuccDataKey, onErrorStr) => {
+    let response = await apiMethod(chatTypeId, chatId, putType, newChatPhoto)
+    if(response.data.resultCode === 0){
+        console.log(onSuccStr + response.data.data[onSuccDataKey])
+    } else {
+        let message = response.data.messages.length  ? response.data.messages[0] : 'Some error';
+        console.log(onErrorStr + message)
+    }
+}
 export default chatsReducer;
+
+
+
+// export const getChat = (chatTypeId, chatId) => async(dispatch) => {
+//     let response = await chatsAPI.getChat(asyncAPIMethodParams)
+//     if(response.data.resultCode === 0){
+        
+//     } else {
+        
+//     }
+// }
+
 
 
 

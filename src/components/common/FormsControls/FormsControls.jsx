@@ -55,7 +55,7 @@ export const createField = (placeholder, name, component, validators, props={}, 
 };
 
 
-class DropDownSelect extends React.Component { // eslint-disable-line react/prefer-stateless-function
+export class DropDownSelect extends React.Component { // eslint-disable-line react/prefer-stateless-function
 
     renderSelectOptions = (person) => (
         <option key={person.userId} value={person.userId}>{person.name}</option>
@@ -81,8 +81,26 @@ DropDownSelect.propTypes = {
     label: PropTypes.string,
 };
 
-export default DropDownSelect;
 
+
+export const ReduxFormSnippet = ({ pristine, reset, submitting, error, sumbitButtonName } ) => {
+    return (
+        <>
+        {
+            error && 
+            <div className={styles.formSummaryError}>
+                {error}
+            </div>
+            }
+            <div className=''>
+                <button type='submit' disabled={pristine || submitting} >{sumbitButtonName}</button>
+            </div>
+            <div className=''>
+                <button type='button' disabled={pristine || submitting} onClick={reset}>Clear</button>
+            </div>
+        </>
+    )
+}
 
 // export const Select = (props) => {
 //     const { input, meta, child, ...restProps } = props;
