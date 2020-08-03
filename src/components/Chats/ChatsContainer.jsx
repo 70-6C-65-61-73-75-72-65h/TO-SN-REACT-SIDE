@@ -79,6 +79,13 @@ const ChatsContainer = (props) => {
     const [iF, setIF]= useState(true) // isFetching
     const [iF2, setIF2]= useState(true) // isFetching
     // debugger
+    const refreshData = () => {
+        // debugger
+        if (iF2) {
+            setTimeout(async() =>{await props.getChats()}, 10000) // так как обновелния в чатах могут быть и не только с моей стороны но и с чужой
+        }
+    }
+
     useEffect(() => {
         const fetchData = async() => {
             if(iF){
@@ -100,6 +107,12 @@ const ChatsContainer = (props) => {
         fetchData();
         // fetchUsersToChat();
     }, [props, iF, iF2])
+
+    useEffect(() => {
+        // debugger
+        refreshData();
+    }, [props.chats])
+
 
     if(iF || iF2) return <Preloader/>
     // key `${chat.chatType}_${chat.name}`

@@ -1,5 +1,6 @@
 import React from 'react';
 import s from './../Chats.module.css';
+import styleMessages from './../Message/Message.module.css';
 import { NavLink } from "react-router-dom";
 import { convertTime } from '../../common/utils/convertTime';
 import Preloader from '../../common/Preloader/Preloader';
@@ -7,36 +8,37 @@ import { ReduxFormSnippet, createField, Input, DropDownSelect } from '../../comm
 import { maxLength200, maxLength1000 } from '../../../utils/validators/validators';
 import { reduxForm } from 'redux-form';
 import backupQuotes from '../../common/utils/backupQuotes';
+import { useState } from 'react';
 
 
 ////////////////////
 const AddChatMemberForm = (props) => {
-    const { handleSubmit, pristine, reset, submitting, error, snusers, chatUsersIds } = props // chatUsersIds - list of ids from chat members
+    const { handleSubmit, pristine, reset, submitting, error, snusers, chatUsersIds, msgStyle } = props // chatUsersIds - list of ids from chat members
+    console.log(props)
     return (
-        <form onSubmit={handleSubmit} className={s.addMemberForm}>
-            {createField('DropDownSelect', 'dropDownSelect', DropDownSelect, null, {people:  snusers.filter(snuser => !chatUsersIds.includes(snuser.userId))})}
-            <ReduxFormSnippet  pristine={pristine} reset={reset} submitting={submitting} error={error} sumbitButtonName={'Add Member'}/>
+        <form onSubmit={handleSubmit} className={`${msgStyle} ${s.addBorder}`}>
+        {createField('DropDownSelect', 'dropDownSelect', DropDownSelect, null, {people:  snusers.filter(snuser => !chatUsersIds.includes(snuser.userId))})}
+        <ReduxFormSnippet  pristine={pristine} reset={reset} submitting={submitting} error={error} sumbitButtonName={'Add Member'}/>
         </form>
     )
 }
 
 const AddChatMemberFormRedux = reduxForm({form: 'addChatMember'})(AddChatMemberForm)
 
-const AddChatMember = ({addMember, chatTypeId, chatId, snusers, chatUsersIds}) => {
-    // console.log('chatUsersIds')
-    // console.log(chatUsersIds)
+export const AddChatMember = ({addMember, chatTypeId, chatId, snusers, chatUsersIds, msgStyle=''}) => {
     const onSubmit = (formData) => {
         addMember(chatTypeId, chatId, formData['dropDownSelect'])
     }
-    return  <AddChatMemberFormRedux onSubmit={onSubmit} snusers={snusers} chatUsersIds={chatUsersIds}/>
+    return  <AddChatMemberFormRedux onSubmit={onSubmit} snusers={snusers} chatUsersIds={chatUsersIds} msgStyle={msgStyle}/>
 }
 ////////////////////
 
-////////////////////
-const ChangeChatPhotoForm  = (props) => {
-    const { handleSubmit, pristine, reset, submitting, error } = props
-    return (
-        <form onSubmit={handleSubmit} className={s.changeChatPhotoForm}>
+//////////////////// styleMessages.chatsSettingsItemForm
+
+const ChangeChatPhotoForm = (props) => {
+    const { handleSubmit, pristine, reset, submitting, error, msgStyle } = props
+    return ( // className={s.changeChatPhotoForm} chatsSettingsItem
+        <form onSubmit={handleSubmit} className={`${msgStyle} ${s.addBorder}`}>
             {createField('Photo', 'photo', Input, [maxLength1000])}
             <ReduxFormSnippet  pristine={pristine} reset={reset} submitting={submitting} error={error} sumbitButtonName={'Change Photo'}/>
         </form>
@@ -46,20 +48,21 @@ const ChangeChatPhotoForm  = (props) => {
 const ChangeChatPhotoFormRedux = reduxForm({form: 'chageChatPhoto'})(ChangeChatPhotoForm)
 
 
-const ChangeChatPhoto = ({setChatPhotoRequest, chatTypeId, chatId}) => {
+export const ChangeChatPhoto = ({setChatPhotoRequest, chatTypeId, chatId, msgStyle=''}) => {
     const onSubmit = (formData) => { // or JSON.stringify
         let newPhotoObject = backupQuotes({'large': null, 'small': formData['photo']})
         setChatPhotoRequest(chatTypeId, chatId, newPhotoObject)
     }
-    return  <ChangeChatPhotoFormRedux onSubmit={onSubmit}/>
+    return  <ChangeChatPhotoFormRedux onSubmit={onSubmit} msgStyle={msgStyle}/>
 }
 ////////////////////
 
-////////////////////
+//////////////////// {styleMessages.chatsSettingsItem}
 const RenameChatForm = (props) => {
-    const { handleSubmit, pristine, reset, submitting, error } = props
-    return (
-        <form onSubmit={handleSubmit} className={s.renameChatForm}>
+    const { handleSubmit, pristine, reset, submitting, error, msgStyle } = props
+    // let msgStyle = styleMessageClass ? styleMessages.chatsSettingsItemForm : ''
+    return ( // className={s.renameChatForm}
+        <form onSubmit={handleSubmit} className={`${msgStyle} ${s.addBorder}`}>
             {createField('Name', 'name', Input, [maxLength200])}
             <ReduxFormSnippet  pristine={pristine} reset={reset} submitting={submitting} error={error} sumbitButtonName={'Rename Chat'}/>
         </form>
@@ -68,25 +71,52 @@ const RenameChatForm = (props) => {
 
 const RenameChatFormRedux = reduxForm({form: 'renameChat'})(RenameChatForm)
 
-const RenameChat = ({renameChatRequest, chatTypeId, chatId}) => {
+export const RenameChat = ({renameChatRequest, chatTypeId, chatId, msgStyle=''}) => {
     const onSubmit = (formData) => {
         renameChatRequest(chatTypeId, chatId, formData['name'])
     }
-    return  <RenameChatFormRedux onSubmit={onSubmit}/>
+    return  <RenameChatFormRedux onSubmit={onSubmit} msgStyle={msgStyle}/>
 }
 ////////////////////
 
-
-const Member = ({ member }) => {
+// setMembersShow(event);
+export const Member = ({ member, memberStyle, chatMemberSettings=null, setMemberOperShow=null, setSelectedMember=null }) => {
     return (
-        <div className={`${s.member} ${s.subElem2}`}>
+        <>
+        <div className={memberStyle}>
             <NavLink to={'/profile/' + member.id}>
                 <div className={s.memberName}>{member.name}</div>
                 <div className={s.memberPhoto}><img src={member.photos.small} alt='Ava' /></div>
             </NavLink>
+            {chatMemberSettings ? <a className={chatMemberSettings} onClick={(event) => {setSelectedMember(member.id); setMemberOperShow(event)}}>Operations</a>: null}
         </div>
+        {/* <br/> */}
+        </>
     )
 }
+
+
+
+{/* <Members membersShow={membersShow} members={members} memberOperShow={memberOperShow} memberOpers={memberOpers} /> */}
+export const Members = ({members, membersShow, memberOperShow, selectedMember, memberOpers}) => { // <Member />
+    
+    return(
+        <>
+
+        <div className={membersShow ? styleMessages.chatsMembersActive : styleMessages.chatsMembers}>
+            <div className={membersShow ? styleMessages.chatsMembersActive : styleMessages.chatsMembers}>{members}</div>
+        </div>
+        
+        <div className={memberOperShow ? `${styleMessages.smthElseListActive}`: `${s.smthElseList}`}>
+            
+            {memberOpers.map(memberOper => 
+                <div className={`${styleMessages.subElemMSBs} ${styleMessages.infoItemMSBs}`}><a className={`${styleMessages.membOperLink}`} onClick={memberOper.method(selectedMember)}>{memberOper.name}</a></div>
+            )}
+        </div>
+        </>
+    )
+}
+
 
 const LastMessage = ({ sended, body, authorName }) => {
     return (
@@ -126,7 +156,7 @@ const ChatItem = ({ lastMessage, getCountOfNewGlobalMsgs, members, chatType, nam
 
     let path = `/chats/${chatType}/${name}/`
     let chatUsersIds = members.map(member => member.id)
-    members = members.map(member => <Member member={member} key={member.id} />)
+    members = members.map(member => <Member member={member} key={member.id} memberStyle={`${s.member} ${s.subElem2}`} />)
     if(isFetching) return <Preloader />
     return (
         <div className={s.chatItem}>
@@ -187,11 +217,13 @@ const ChatItem = ({ lastMessage, getCountOfNewGlobalMsgs, members, chatType, nam
                                     <div className={`${s.deleteChat} ${s.subElem} ${s.infoItem}`}><button onClick={() => clearChatByMethod(deleteChatRequest)}>DELETE CHAT</button></div>
                                     {/* other methods in chat detail */}
                                     {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(toogleMemberStatus)}>toogleMemberStatus</button></div> */}
-                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(addMember)}>addMember</button></div> */}
-                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(removeMember)}>removeMember</button></div> */}
                                     {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(removeMemberMsgs)}>removeMemberMsgs</button></div> */}
                                     {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(removeOneMemberMsg)}>removeOneMemberMsg</button></div> */}
+                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(removeMember)}>removeMember</button></div> */}
+
                                     {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(setChatPhotoRequest)}>New Chat Photo</button></div> */}
+                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(addMember)}>addMember</button></div> */}
+                                    
                                     
                             </div>
                         </div>

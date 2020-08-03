@@ -12,7 +12,9 @@ const CURRENT_CHAT_DATA_FETCHING = 'CURRENT_CHAT_DATA_FETCHING';
 const TOOGLE_IS_UNMOUNT = 'TOOGLE_IS_UNMOUNT';
 
 const ADD_USERS_TO_SELECT = 'ADD_USERS_TO_SELECT'
-
+const SET_CURRENT_CHAT_MEMBERS ='SET_CURRENT_CHAT_MEMBERS'
+const SET_CURRENT_CHAT_PHOTO = 'SET_CURRENT_CHAT_PHOTO'
+const SET_CURRENT_CHAT_NAME = 'SET_CURRENT_CHAT_NAME'
 let initialState = {
     chatId: null,
     chatTypeId: null,
@@ -51,6 +53,16 @@ const chatsReducer = (state = initialState, action) => {
             return {...state, isFetching: action.isFetching}
         }
 
+        case SET_CURRENT_CHAT_MEMBERS: {
+            return {...state, currentChat: {...state.currentChat, members: action.members}}
+        }
+        case SET_CURRENT_CHAT_NAME: {
+            return {...state, currentChat: {...state.currentChat, name: action.name}}
+        }
+        case SET_CURRENT_CHAT_PHOTO: {
+            return {...state, currentChat: {...state.currentChat, chatPhoto: action.chatPhoto}}
+        }
+
 
         case ADD_USERS_TO_SELECT: {
             return {...state, usersToSelect: action.usersToSelect}
@@ -64,6 +76,13 @@ const chatsReducer = (state = initialState, action) => {
             return state;
     }
 }
+
+
+
+export const setCurrentChatMembers = (members) => ({type: SET_CURRENT_CHAT_MEMBERS, members})
+export const setCurrentChatName = (name) => ({type: SET_CURRENT_CHAT_NAME, name})
+export const setCurrentChatPhoto = (chatPhoto) => ({type: SET_CURRENT_CHAT_PHOTO, chatPhoto})
+
 
 
 export const setCurrentChatIdsToStore = (chatTypeId, chatId, currentChat) => ({type: SET_CURRENT_CHAT_DATA, chatId, chatTypeId, currentChat})
@@ -140,10 +159,12 @@ export const getCurrentChatData = () => async(dispatch) =>{
     if(response.data.resultCode === 0){
         // debugger
         let isUpdated = 'local';
+        console.log(response.data.data)
         if(!('local' in response.data.data.lastMessage)){
             console.log('pizdez no local in lastMessage in getCurrentChatData')
         }
         else if (!response.data.data.lastMessage.local){
+            console.log('not here')
             isUpdated = await dispatch(updateUnreadMsgs(chatTypeId, chatId, response.data.data.lastMessage.id))
         }
         // debugger
@@ -168,6 +189,18 @@ export const getCurrentChatData = () => async(dispatch) =>{
     }
 }
 
+
+// setCurrentChatMembers
+export const refreshCurrentChatData = (method, requiredDataKey) => async(dispatch) =>{
+    let chatId = parseInt(localStorage.getItem('chatId') )
+    let chatTypeId = parseInt(localStorage.getItem('chatTypeId') )
+    let response = await chatsAPI.getChat(chatTypeId, chatId)
+    if(response.data.resultCode === 0){
+        dispatch(method(response.data.data[requiredDataKey]))
+    } else {
+        console.log('getCurrentChatData Error in getChat'+ response.data.messages[0])
+    }
+}
 
 
 export const setChats = (chats) => ({type: SET_CHATS, chats})
@@ -198,6 +231,7 @@ const getChatHelper = async(chatType, chatTypeId, chatArray) => {
 
 
 export const getChats = () => async(dispatch) => {
+    // debugger
     let response = await chatsAPI.getChats(); // chatTypeId, chatId// =>
     if(response.data.resultCode === 0){
         let dialogs = await getChatHelper('dialog', 0, response.data.data.dialogs)
@@ -283,7 +317,11 @@ export const clearChatAllGlobal = (chatTypeId, chatId, putType='clear', clearTyp
 
 
 export const updateUnreadMsgs = (chatTypeId, chatId, lastGlobalReadMsgId, putType='updateUnreadMsgs') => async(dispatch) => {
+    console.log('updateUnreadMsgs')
+    console.log(chatTypeId, chatId, lastGlobalReadMsgId, putType='updateUnreadMsgs')
     let response = await chatsAPI.updateUnreadMsgs(chatTypeId, chatId, putType, lastGlobalReadMsgId)
+    console.log(response.data)
+    // debugger
     if(response.data.resultCode === 0){
         console.log('updateUnreadMsgs updated')
     } else {
@@ -311,6 +349,7 @@ export const createDialog = (snusers, name=null) => createChatRequest(snusers, n
 
 export const deleteChatRequest = (chatTypeId, chatId) => async(dispatch) => {
     let response = await chatsAPI.deleteChat(chatTypeId, chatId)
+    // debugger
     if(response.data === ''){
         console.log('chat succ deleted')
     } else {
@@ -320,10 +359,12 @@ export const deleteChatRequest = (chatTypeId, chatId) => async(dispatch) => {
 }
 
 export const renameChatRequest = (chatTypeId, chatId, newChatName, putType='rename') => async(dispatch) => {
+    // debugger
     let response = await chatsAPI.renameChat(chatTypeId, chatId, putType, newChatName)
-    debugger
+    // debugger
     if(response.data.resultCode === 0){
         console.log('chat renamed:'+ response.data.data.renamed)
+        dispatch(refreshCurrentChatData(setCurrentChatName, 'name'))
     } else {
         let message = response.data.messages.length  ? response.data.messages[0] : 'Some error';
         dispatch(stopSubmit('renameChat', {_error: message}));
@@ -344,7 +385,7 @@ export const toogleMemberStatus = (chatTypeId, chatId, userId, putType='toogleMe
     //     let message = response.data.messages.length  ? response.data.messages[0] : 'Some error';
     //     console.log('toogleMemberStatusForConversation error: '+ message)
     // }
-    await chatPutParts(chatTypeId, chatId, userId, putType, chatsAPI.toogleMemberStatusForConversation.bind(chatsAPI), 'member status toggled: ', 'toggled', 'toogleMemberStatusForConversation error: ')
+    await chatPutParts(chatTypeId, chatId, userId, putType, chatsAPI.toogleMemberStatusForConversation.bind(chatsAPI), 'member status toggled: ', 'toggled', 'toogleMemberStatusForConversation error: ', dispatch, setCurrentChatMembers, 'members')
 }
 
 export const addMember = (chatTypeId, chatId, userId, putType='addMember') => async(dispatch) => {
@@ -355,10 +396,10 @@ export const addMember = (chatTypeId, chatId, userId, putType='addMember') => as
     //     let message = response.data.messages.length  ? response.data.messages[0] : 'Some error';
     //     console.log('addMember error: '+ message)
     // }
-    await chatPutParts(chatTypeId, chatId, userId, putType, chatsAPI.addMemberForConversation.bind(chatsAPI), 'member added: ', 'memberAdded', 'addMember error: ')
+    await chatPutParts(chatTypeId, chatId, userId, putType, chatsAPI.addMemberForConversation.bind(chatsAPI), 'member added: ', 'memberAdded', 'addMember error: ', dispatch, setCurrentChatMembers, 'members')
 }
 
-
+// после удаления мембера у которого были сообзения Bad Request: /api/chats/1/23/messages/
 export const removeMember = (chatTypeId, chatId, userId, putType='removeMember') => async(dispatch) => {
     // let response = await chatsAPI.removeMemberFromConversation(chatTypeId, chatId, putType, userId)
     // if(response.data.resultCode === 0){
@@ -367,7 +408,12 @@ export const removeMember = (chatTypeId, chatId, userId, putType='removeMember')
     //     let message = response.data.messages.length  ? response.data.messages[0] : 'Some error';
     //     console.log('removeMember error: '+ message)
     // }
-    await chatPutParts(chatTypeId, chatId, userId, putType, chatsAPI.setChatPhoto.bind(chatsAPI), 'member removed: ', 'memberRemoved', 'removeMember error: ')
+    // debugger 
+    // if(response.data.resultCode === 0){ storeDispatchMethod
+    //     storeDispatchMethod && dispatch(refreshCurrentChatData(storeDispatchMethod)) // chatTypeId, chatId
+    // } 
+    let response = await chatPutParts(chatTypeId, chatId, userId, putType, chatsAPI.removeMemberFromConversation.bind(chatsAPI), 'member removed: ', 'memberRemoved', 'removeMember error: ', dispatch, setCurrentChatMembers, 'members')
+
 }
 
 
@@ -395,18 +441,22 @@ export const removeOneMemberMsg = (chatTypeId, chatId, userId, putType='removeOn
 
 
 export const setChatPhotoRequest = (chatTypeId, chatId, newChatPhoto, putType='setChatPhoto') => async(dispatch) => {
-    await chatPutParts(chatTypeId, chatId, newChatPhoto, putType, chatsAPI.setChatPhoto.bind(chatsAPI), 'chat photo changed: ', 'isChatPhotoChanged', 'setChatPhotoRequest error: ')
+    await chatPutParts(chatTypeId, chatId, newChatPhoto, putType, chatsAPI.setChatPhoto.bind(chatsAPI), 'chat photo changed: ', 'isChatPhotoChanged', 'setChatPhotoRequest error: ', dispatch, setCurrentChatPhoto, 'chatPhoto')
 }
 // all the same
 
-const chatPutParts = async(chatTypeId, chatId, newChatPhoto, putType, apiMethod, onSuccStr, onSuccDataKey, onErrorStr) => {
-    let response = await apiMethod(chatTypeId, chatId, putType, newChatPhoto)
+const chatPutParts = async(chatTypeId, chatId, putData, putType, apiMethod, onSuccStr, onSuccDataKey, onErrorStr, dispatch=null, storeDispatchMethod=null, requiredDataKey=null) => {
+    // debugger
+    let response = await apiMethod(chatTypeId, chatId, putType, putData)
+    // debugger
     if(response.data.resultCode === 0){
         console.log(onSuccStr + response.data.data[onSuccDataKey])
+        storeDispatchMethod && dispatch(refreshCurrentChatData(storeDispatchMethod, requiredDataKey))
     } else {
         let message = response.data.messages.length  ? response.data.messages[0] : 'Some error';
         console.log(onErrorStr + message)
     }
+    return response;
 }
 export default chatsReducer;
 

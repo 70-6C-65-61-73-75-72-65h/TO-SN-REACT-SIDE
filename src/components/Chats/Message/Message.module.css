@@ -1,7 +1,24 @@
-.currentChat a:link { color:rgb(31, 8, 61); font-weight: 700; font-style: italic; text-decoration: none;}
+/* .currentChat a:link { color:white; font-weight: 700; font-style: italic; text-decoration: none;}
 .currentChat a:visited { color:rgb(60, 193, 115) }
 .currentChat a:hover { color:rgb(115, 255, 0) }
-.currentChat a:active { color:rgb(255, 0, 98) }
+.currentChat a:active { color:rgb(255, 0, 98) } */
+
+/* .currentChat:hover ::-webkit-scrollbar {
+    width: 1vh;
+}
+    
+.currentChat:hover ::-webkit-scrollbar-track {
+background: transparent;
+}
+.currentChat:hover ::-webkit-scrollbar-thumb {
+background: rgb(255, 255, 255); 
+border-radius: 0 1vh 1vh 0;
+}
+
+.currentChat:hover ::-webkit-scrollbar-thumb:hover {
+background: red; 
+} */
+
 
 .currentChat {
     /* position: relative; */
@@ -31,6 +48,8 @@
     /* display: grid; */
     /* display: block; */
     /* text-align: center; */
+    
+    color: white;
     border: solid black 0.3vh;
     border-radius: 2vw 2vw 2vw 2vw;
     /* height: inherit; */
@@ -38,13 +57,116 @@
     grid-area: chatsHeader;
     display: grid;
     grid-template-areas:
-    "chatsHeaderPhoto chatsHeaderName";
-    grid-template-columns: 20vh 1fr;
-    grid-template-rows: 100%;
+    "chatsHeaderPhoto chatsHeaderName chatsHeaderSettings";
+    grid-template-columns: 20vh 2fr 1.2fr;
+    grid-template-rows: 100%; /**inherit/
     
     /* grid-template-rows: 1fr; */
     /* grid-gap: 1vw; */
 }
+
+.chatsHeaderSettings {
+    padding-left: 5vh;
+    grid-area: chatsHeaderSettings;
+    position: relative;
+    border: inherit;
+    border-radius: inherit;
+}
+
+.chatsHeaderSettings:hover .chatsSettings{
+    /* left:5vh; */
+    display: block;
+    position: absolute;
+    grid-template-areas:
+    "chatsSettingsItem";
+    grid-template-rows: repeat(auto-fit, 1fr);
+}
+
+.chatsSettings {
+    display: none;
+}
+
+.chatsSettingsItem {
+    color: red;
+    position: relative;
+    display: grid;
+    font-size: 2vh;
+    /* padding-left: 1vh;
+    left:-18vh; */
+    /* padding-left: 5vh; */
+}
+
+
+.chatsSettingsItem:hover .chatsSettingsItemForm {
+    display: block;
+    position: absolute;
+    left: 16vh;
+}
+
+.chatsSettingsItem:hover > .chatsSettingsItemH {
+    /* width: inherit;  */
+    width:200%;
+    /* text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;     
+    padding-right: 12vh; */
+}
+
+
+.chatsSettingsItemForm {
+    display: none;
+}
+
+
+
+.chatsMembers {
+    display: none;
+}
+
+.chatsMembersActive{
+    display: block;
+    position: absolute;
+    
+    /* left: -40vh;
+    top: 20vh; */
+    width: 50%;
+    height: 50%;
+    left: 25%;
+    top: 25%;
+    overflow-y: scroll;
+    /* overflow: hidden; */
+    overflow-x: hidden;
+    grid-template-areas:
+    "chatMember chatMemberSettings";
+    grid-template-rows: repeat(auto-fit, 1fr 0.2fr);
+}
+
+/* .chatsMembersHeader > button:active .chatsMembers{
+    display: block;
+    position: absolute;
+    left: -40vh;
+    top: 40vh;
+    width: 200%;
+    height: 400%;
+    overflow-y: scroll;
+    grid-template-areas:
+    "chatMember chatMemberSettings";
+    grid-template-rows: repeat(auto-fit, 1fr 0.2fr);
+} */
+
+.chatMember {
+    /* position: relative; */
+    grid-area: chatMember;
+    color: red;
+}
+
+.chatMemberSettings {
+    /* position: relative; */
+    grid-area: chatMemberSettings;
+    color: red;
+}
+
+
 
 .chatsHeaderName {
     grid-area: chatsHeaderName;
@@ -240,9 +362,67 @@
     font-size: 2vh;
     left: -7vh;
     top: -3vh;
-    /* border: solid red 0.1vh; */
 
 }
+
+
+
+.smthElseListActive {
+    padding-top: 1vh;
+    border-radius: 20%;
+    border: solid rgb(0, 0, 0) 0.7vh;
+    background-color: rgb(64, 0, 66);
+    position: absolute;
+    width: 20%;
+    height: 10%;
+    left: 40%;
+    top: 45%;
+    overflow-y: scroll;
+    grid-template-areas:
+    "infoItemMSBs";
+    grid-template-rows: repeat(auto-fit, 1fr);
+    color: red;
+}
+
+
+.subElemMSBs {
+    position: relative;
+    /* top:10vh; */
+} 
+
+.subElemMSBs > .membOperLink {
+    font-family: italic;
+    text-align: center;
+}
+
+
+.infoItemMSBs {
+    display: grid;
+    font-size: 2vh;
+    grid-area: infoItemMSBs;
+} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* {
     "username": "Maxerrrrrrrrrrrrrreeeeeeeeeeeeeeeeeeeeekkkk",

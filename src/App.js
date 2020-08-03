@@ -14,6 +14,7 @@ import { initializeApp } from './redux/app-reducer';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import ChatDetail from './components/Chats/ChatItem/ChatDetail';
+import { useAllFocusedElems } from './customHooks/focusedElems';
 
 // import SignUpContainer from './components/Auth/SignUpContainer';
 // import Logout from './components/Auth/Logout';
@@ -42,12 +43,32 @@ import ChatDetail from './components/Chats/ChatItem/ChatDetail';
 
 
 const App = React.memo((props) => {
+        const [membersShow, setMembersShow, memberOperShow, setMemberOperShow] = useAllFocusedElems()
+
+        const falseAllFocusedElems = () => {
+                setMembersShow(false)
+                setMemberOperShow(false)
+        }
+        const toogleFocuseElem = (method, elem) => (event) => {
+                console.log(event.target)
+                console.log(elem)
+                event.stopPropagation()
+                method(!elem)
+        }
+
+        // const toogleFocuseElem = (method, elem) => (event) => {
+        //         console.log(event.target)
+        //         console.log(elem)
+        //         event.stopPropagation()
+        //         method(!elem)
+        // }
+
         console.log('rerender')
         console.log(props.initialized)
         useEffect(() => {props.initializeApp()}, [])
         if((!props.initialized)) return <Preloader/>
         return (
-                <div className='whole-app-page-wrapper'>
+                <div className='whole-app-page-wrapper' onClick={()=>{falseAllFocusedElems()}}>
                 <div className='app-wrapper'>
                         <Header />
                         <Navbar />
@@ -62,7 +83,9 @@ const App = React.memo((props) => {
                         <Route exact path='/chats'
                                 render={() => <ChatsContainer />} />
                         <Route path='/chats/:chatType/:name?'
-                                render={() => <ChatDetail />} />
+                                render={() => <ChatDetail setMembersShow={setMembersShow} membersShow={membersShow} 
+                                                setMemberOperShow={setMemberOperShow} memberOperShow={memberOperShow}
+                                                toogleFocuseElem={toogleFocuseElem}/>} />
                         </div>
                 </div>
                 </div>

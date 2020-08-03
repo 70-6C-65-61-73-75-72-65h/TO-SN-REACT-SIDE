@@ -16,8 +16,8 @@ import {
     getTotalUsersCount, getUsers, getQuery
 } from "../../redux/users-selectors";
 import UsersSearch from './UsersSearch';
-import { useState } from 'react';
-import { useEffect } from 'react';
+
+import { useUsersEffects } from '../../customHooks/usersHooks';
 
 
 // export function useQuering(isWithQuery){
@@ -28,18 +28,14 @@ import { useEffect } from 'react';
 //     return queried
 // }
 
+
+
 const UsersContainer = (props) => {
     // const queried = useQuering(false)
     // const [query, setQuery] = useState('')
     // const { currentPage, pageSize } = props;
-
-    useEffect(() => {
-        props.query==='' ? props.getUsers(props.currentPage, props.pageSize) : props.searchUsers(props.currentPage, props.query);
-    }, [props.currentPage])
-
-    const onPageChanged = (pageNumber) => {
-        props.query==='' ? props.getUsers(pageNumber, props.pageSize) : props.searchUsers(pageNumber, props.query);
-    }
+    const [onPageChanged] = useUsersEffects(props.getUsers, props.searchUsers, props.query, props.currentPage, props.pageSize)
+    
 
     return (<>
         {props.isFetching ? <Preloader /> : null}

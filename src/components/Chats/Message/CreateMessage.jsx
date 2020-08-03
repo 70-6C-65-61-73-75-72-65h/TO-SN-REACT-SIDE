@@ -33,7 +33,7 @@ const CreateMessageReduxForm = reduxForm({form: 'CreateMessage'})(CreateMessageF
 
 const CreateMessage = (props) => {
     const onSubmit = (formData) => {
-        debugger
+        // debugger
         props.createMessageRequest(props.chatTypeId, props.chatId, formData["messageBody"])
     }
     return (
