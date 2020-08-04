@@ -37,11 +37,16 @@ const UsersContainer = (props) => {
     const [onPageChanged] = useUsersEffects(props.getUsers, props.searchUsers, props.query, props.currentPage, props.pageSize)
     
 
-    return (<>
+    return (<div className={props.styleForUsers ? props.styleForUsers: ''}>
         {props.isFetching ? <Preloader /> : null}
         <div >
             <UsersSearch/>
         </div>
+        {props.forChat ?  
+        <a onClick={props.toogleFocuseElem(props.setUsersForChatShow, props.usersForChatShow)}>
+            End Selection
+        </a>: null}
+        
         <Users totalUsersCount={props.totalUsersCount}
             pageSize={props.pageSize}
             currentPage={props.currentPage}
@@ -50,8 +55,15 @@ const UsersContainer = (props) => {
             follow={props.follow}
             unfollow={props.unfollow}
             followingInProgress={props.followingInProgress}
+
+
+            forChat = {props.forChat}
+            setSelectedForChatUsers = {props.setSelectedForChatUsers}
+            selectedForChatUsers={props.selectedForChatUsers}
+            styleForUsers= {props.styleForUsers}
+            styleForUser={props.styleForUsers}
         />
-    </>)
+    </div>)
 }
 
 

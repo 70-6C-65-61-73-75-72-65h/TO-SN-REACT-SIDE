@@ -4,7 +4,7 @@ import userPhoto from "../../assets/images/user.png";
 import {NavLink} from "react-router-dom";
 
 let User = ({user, followingInProgress, unfollow, follow}) => {
-    // console.log(user)
+    console.log(user)
     // debugger followed
     return (
        <div>
@@ -49,3 +49,26 @@ let User = ({user, followingInProgress, unfollow, follow}) => {
 }
 
 export default User;
+
+
+
+export const ForChatUser = ({user, setSelectedForChatUsers, selectedForChatUsers, styleForUser}) => {
+    // console.log(user)
+    // debugger followed // className={styleForUser}
+    // console.log([...selectedForChatUsers.filter(selUserId => selUserId !== user.userId)])
+    // console.log(selectedForChatUsers)
+    return ( 
+        <div>
+            <NavLink to={'/profile/' + user.userId}>
+                <div >{user.name}</div>
+                <div className={styles.userChoosePhoto}><img src={user.photos.small} alt='Ava' /></div>
+            </NavLink>
+            { selectedForChatUsers.includes(user.userId) ? 
+            <a onClick={()=>{setSelectedForChatUsers( selectedForChatUsers.filter(selUserId => selUserId !== user.userId) )}}>Remove User</a> 
+            :
+            <a onClick={()=>{setSelectedForChatUsers([...selectedForChatUsers, user.userId])}}>Add User</a>
+             }
+            
+        </div>
+             )
+}

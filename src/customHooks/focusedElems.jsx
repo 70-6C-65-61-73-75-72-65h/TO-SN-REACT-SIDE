@@ -4,6 +4,12 @@ export const useMembersShow = () => {
     const [membersShow, setMembersShow] = useState(false);
     return [membersShow, setMembersShow]
 }
+
+export const useUsersForChatShow = () => {
+    const [usersForChatShow, setUsersForChatShow] = useState(false);
+    return [usersForChatShow, setUsersForChatShow]
+}
+
 export const useMemberOperShow = () => {
     const [memberOperShow, setMemberOperShow] = useState(false);
     return [memberOperShow, setMemberOperShow]
@@ -13,5 +19,6 @@ export const useMemberOperShow = () => {
 export const useAllFocusedElems = () => {
     const [membersShow, setMembersShow] = useMembersShow()
     const [memberOperShow, setMemberOperShow] = useMemberOperShow()
-    return [membersShow, setMembersShow, memberOperShow, setMemberOperShow]
+    const [usersForChatShow, setUsersForChatShow] = useUsersForChatShow()
+    return [membersShow, setMembersShow, memberOperShow, setMemberOperShow, usersForChatShow, setUsersForChatShow]
 }

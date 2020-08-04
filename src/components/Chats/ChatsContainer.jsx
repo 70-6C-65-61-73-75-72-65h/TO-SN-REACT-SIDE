@@ -54,16 +54,34 @@ import ChatItem from './ChatItem/ChatItem';
 import chatsStyles from './Chats.module.css';
 import { selectChats } from '../../redux/chats-selector';
 import { withRouter } from 'react-router-dom';
-import { reduxForm } from 'redux-form';
-import { DropDownSelect, createField, Input, ReduxFormSnippet } from '../common/FormsControls/FormsControls';
+import { reduxForm, formValues } from 'redux-form';
+import { createField, Input, ReduxFormSnippet } from '../common/FormsControls/FormsControls';
 import { maxLength200 } from '../../utils/validators/validators';
+ 
+import styleMessages from './Message/Message.module.css';
+import UsersContainer from '../Users/UsersContainer';
 
 
 const CreateChatForm = (props) => {
-    const { handleSubmit, pristine, reset, submitting, error, snusers, myUserId } = props
+    const { handleSubmit, pristine, reset, submitting, error} = props
+    // const MyItemizedList = [19, 20]
+    // const ItemList = formValues('selectedMembers')(MyItemizedList)
+    // const [selected, setSelected] = useState([]);
+    // // snusers, myUserId
+    // const options = snusers
+    //                 .filter(snuser => snuser.userId !== myUserId)
+    //                 .map(snuser => ({label: snuser.name, value: snuser.id}))
     return (
         <form onSubmit={handleSubmit} className={chatsStyles.createChatForm}>
-            {createField('DropDownSelect', 'dropDownSelect', DropDownSelect, null, {people: snusers.filter(snuser => snuser.userId !== myUserId)})}
+            {/* {createField('DropDownSelect', 'dropDownSelect', DropDownSelect, null, {people: snusers.filter(snuser => snuser.userId !== myUserId)})} */}
+            
+            {/* {createField('SelectedMembers', 'selectedMembers', MultiSelectWrap, null, 
+                { optionsMS: options, 
+                    valueMS:selected, 
+                    onChangeMS:setSelected, 
+                    labelledByMS:"Select"  })} */}
+            {/* {createField('SelectedMembers', 'selectedMembers', ForChatUsersListWrap, null)} */}
+            
             {createField('Name', 'name', Input, [maxLength200])}
             <ReduxFormSnippet  pristine={pristine} reset={reset} submitting={submitting} error={error} sumbitButtonName={'Create Chat'}/>
         </form>
@@ -78,6 +96,8 @@ const CreateChatReduxForm = reduxForm({form:'CreateChat'})(CreateChatForm)
 const ChatsContainer = (props) => {
     const [iF, setIF]= useState(true) // isFetching
     const [iF2, setIF2]= useState(true) // isFetching
+    const [selectedForChatUsers, setSelectedForChatUsers] = useState([]) // if null -> dont create chat (dialog or conv)
+
     // debugger
     const refreshData = () => {
         // debugger
@@ -132,32 +152,62 @@ const ChatsContainer = (props) => {
                 renameChatRequest={props.renameChatRequest}
                 setChatPhotoRequest={props.setChatPhotoRequest}
                 addMember={props.addMember}
-                snusers={props.snusers}
+                snusers={props.OLDsnusers}
                 deleteChatRequest={props.deleteChatRequest}
                 // history={props.history}
                 // isUnmount={props.isUnmount}
                 />);
-    console.log(chatsElements)
+    // console.log(chatsElements)
 
 
+
+
+    // selectedMembers = []
+    
     const onSubmit = (formData) => {
-        // debugger
-        let sns = Array.isArray(formData['dropDownSelect']) ? formData['dropDownSelect']: [formData['dropDownSelect']]
+        debugger
+        // let sns = Array.isArray(formData['dropDownSelect']) ? formData['dropDownSelect']: [formData['dropDownSelect']]
+        let sns = Array.isArray(selectedForChatUsers) ? selectedForChatUsers: selectedForChatUsers
         props.createConversation(sns, formData['name'])
     }
 
+    //usersForChatActive -> userForChat
     return(
+        <>
         <div className={chatsStyles.chats}>
             <div className={chatsStyles.chats_header}>Chats</div>
             <div className={chatsStyles.createChat}>
             <div className={chatsStyles.createChatHeader}>Create Conversation
-                <CreateChatReduxForm onSubmit={onSubmit} snusers={props.snusers} myUserId={props.myUserId} />
+                {selectedForChatUsers.length > 1 && <CreateChatReduxForm onSubmit={onSubmit} snusers={props.snusers} myUserId={props.myUserId} /> }
+                {props.usersForChatShow ? 
+                <div  className={chatsStyles.getMemberList} onClick={(event)=>{event.stopPropagation();}}>
+                    <UsersContainer
+
+                    setSelectedForChatUsers={setSelectedForChatUsers} forChat={true} 
+                    selectedForChatUsers={selectedForChatUsers} 
+                    styleForUsers={styleMessages.usersForChatActive} styleForUser={styleMessages.userForChat}
+
+                    usersForChatShow={props.usersForChatShow}
+                    setUsersForChatShow={props.setUsersForChatShow}
+                    toogleFocuseElem={props.toogleFocuseElem}/>
+
+                    {selectedForChatUsers.length === 1 && <a onClick={() => {props.createDialog(selectedForChatUsers[0])}}>Create Dialog</a>}
+                    </div>
+                    // <div className={styleMessages.usersForChatActive}>
+                    :
+                    <a className={chatsStyles.getMemberList} 
+                        onClick={props.toogleFocuseElem(props.setUsersForChatShow, props.usersForChatShow)}>
+                            Choose Users for Chat
+                    </a>
+                }
             </div>
             </div>
                 <div className={chatsStyles.chatsItems}>
                     {chatsElements}
                 </div>
         </div>
+        
+        </>
     )
 }
 // can be lastMessage ={} if no msgs yet, 
@@ -168,7 +218,8 @@ let mapStateToProps = (state) => ({
     isFetching: state.chatsPage.isFetching,
     isUnmount: state.chatsPage.isUnmount,
     myUserId: state.auth.userId,
-    snusers: state.chatsPage.usersToSelect, // по-сути должны быть все)))))))) TODO но асинхронно подгружатся
+    OLDsnusers: state.chatsPage.usersToSelect, // по-сути должны быть все)))))))) TODO но асинхронно подгружатся
+    // state.chatsPage.membersToSelect <- getUsers(page) (subs requestUsersForChat) TODO
     // chatPhotoSmall: selectChatPhotoSmall(state)
     // userId: state.auth.userId,
 })

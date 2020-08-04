@@ -27,7 +27,9 @@ let initialState = {
     isFetching: false,
     isUnmount: false,
 
-    usersToSelect: []
+    usersToSelect: [],
+
+    membersToSelect: []
 };
 
 
@@ -332,7 +334,9 @@ export const updateUnreadMsgs = (chatTypeId, chatId, lastGlobalReadMsgId, putTyp
 
 
 export const createChatRequest = (snusers, name) => async(dispatch) => {
+    debugger
     let response = await chatsAPI.createChat(snusers, name)
+    debugger
     if(response.data.resultCode === 0){
         console.log('createChatRequest created: ' + response.data.data.created)
     } else {
@@ -343,7 +347,7 @@ export const createChatRequest = (snusers, name) => async(dispatch) => {
 }
 
 export const createConversation = (snusers, name) => createChatRequest(snusers, name)
-export const createDialog = (snusers, name=null) => createChatRequest(snusers, name)
+export const createDialog = (snusers) => createChatRequest(snusers, null)
 
 
 

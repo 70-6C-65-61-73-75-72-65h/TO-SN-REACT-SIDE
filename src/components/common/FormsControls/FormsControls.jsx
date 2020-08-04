@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './FormsControls.module.css'
 import { Field } from 'redux-form';
 
 import PropTypes from 'prop-types';
+
+
+// import MultiSelect from "react-multi-select-component";
+
 
 // how to show that we dont pass the field validation before submitting ( or after )
 // field-level validation
@@ -37,8 +41,26 @@ export const Input = (props) => {
     // console.log('Input child: ' + child)
     // console.log('Input restProps: ' + restProps)
     // console.log('Input props: ' + props)
-    return (<FormControl {...props}><input {...input} {...restProps} /></FormControl>)
+    return (<FormControl {...props}><input {...input} {...restProps}/></FormControl>)
 }
+
+
+// export const MultiSelectWrap = (props) => {
+//     debugger
+//     // const { meta, child, ...restProps } = props; // input
+//     // console.log(...restProps)
+//     // debugger
+//     // console.log('Input input: ' + input)
+//     // console.log('Input meta: ' + meta)
+//     // console.log('Input child: ' + child)
+//     // console.log('Input restProps: ' + restProps)
+//     // console.log('Input props: ' + props)
+//     return (<FormControl {...props}><MultiSelect options={props.optionsMS} 
+//         value={props.valueMS} 
+//         onChange={props.onChangeMS}
+//         labelledBy={props.labelledByMS} /></FormControl>)
+// }
+
 
 
 
@@ -48,6 +70,22 @@ export const Input = (props) => {
 //         <select {...input} {...restProps}>
 //         </select>
 //         </FormControl>)
+// }
+/// как возвращять полученый список в редакс форм
+// const ForChatUsersList = () => {
+//     // const onSubmitMemberList = () => {
+
+//     // }
+//     const [] = useState // selectedMembers
+// return (
+//     <UsersContainer />
+// )
+// }
+
+// export const ForChatUsersListWrap = (props) => {
+//     // debugger
+//     // return (<FormControl {...props}><ForChatUsersList /></FormControl>)
+//     return <ForChatUsersList />
 // }
 
 export const createField = (placeholder, name, component, validators, props={}, text="") => { 

@@ -59,9 +59,15 @@ background: red;
 
     display: grid;
     grid-template-areas:
-    "createChatHeader";
+    "createChatHeader getMemberList";
     /* "createChatForm"; */
-    grid-template-rows: 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.getMemberList {
+    position: relative;
+    height: 100%;
+    color: red;
 }
 
 .createChatHeader {

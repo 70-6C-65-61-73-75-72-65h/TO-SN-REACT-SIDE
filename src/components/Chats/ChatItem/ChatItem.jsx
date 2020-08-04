@@ -14,7 +14,7 @@ import { useState } from 'react';
 ////////////////////
 const AddChatMemberForm = (props) => {
     const { handleSubmit, pristine, reset, submitting, error, snusers, chatUsersIds, msgStyle } = props // chatUsersIds - list of ids from chat members
-    console.log(props)
+    // console.log(props)
     return (
         <form onSubmit={handleSubmit} className={`${msgStyle} ${s.addBorder}`}>
         {createField('DropDownSelect', 'dropDownSelect', DropDownSelect, null, {people:  snusers.filter(snuser => !chatUsersIds.includes(snuser.userId))})}

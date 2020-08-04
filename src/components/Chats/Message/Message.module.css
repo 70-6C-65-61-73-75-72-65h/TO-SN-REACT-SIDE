@@ -123,6 +123,38 @@ background: red;
     display: none;
 }
 
+
+
+.usersForChatActive{
+    display: block;
+    position: absolute;
+    
+    /* left: -40vh;
+    top: 20vh; */
+    left: 40vh;
+    width: 30vh;
+    height: 30vh;
+    /* left: 15%;
+    top: 15%; */
+    overflow-y: scroll;
+    /* overflow: hidden; */
+    /* overflow-x: scroll; */
+    grid-template-areas:
+    "userForChat";
+    grid-template-rows: repeat(auto-fit, 2vh);
+}
+
+.userForChat {
+    grid-area: userForChat;
+    height: 10vh;
+    width: 10vh;
+    /* width:  */
+    /* color: red; */
+}
+
+
+
+
 .chatsMembersActive{
     display: block;
     position: absolute;
@@ -413,7 +445,10 @@ background: red;
 
 
 
-
+/* barely finish dialogs module 
+(should change setTimeout refreshing to workers 
+\\ should subs members list in chat create to new page with search and etc for select members (multiple select) 
+\\ should create dialogs chats */
 
 
 

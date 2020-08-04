@@ -43,15 +43,16 @@ import { useAllFocusedElems } from './customHooks/focusedElems';
 
 
 const App = React.memo((props) => {
-        const [membersShow, setMembersShow, memberOperShow, setMemberOperShow] = useAllFocusedElems()
+        const [membersShow, setMembersShow, memberOperShow, setMemberOperShow, usersForChatShow, setUsersForChatShow] = useAllFocusedElems()
 
         const falseAllFocusedElems = () => {
                 setMembersShow(false)
                 setMemberOperShow(false)
+                setUsersForChatShow(false)
         }
         const toogleFocuseElem = (method, elem) => (event) => {
-                console.log(event.target)
-                console.log(elem)
+                // console.log(event.target)
+                // console.log(elem)
                 event.stopPropagation()
                 method(!elem)
         }
@@ -81,7 +82,9 @@ const App = React.memo((props) => {
                         <Route path='/users'
                                 render={() => <UsersContainer />} />
                         <Route exact path='/chats'
-                                render={() => <ChatsContainer />} />
+                                render={() => <ChatsContainer  usersForChatShow={usersForChatShow} 
+                                                                setUsersForChatShow={setUsersForChatShow}
+                                                                toogleFocuseElem={toogleFocuseElem}/>} />
                         <Route path='/chats/:chatType/:name?'
                                 render={() => <ChatDetail setMembersShow={setMembersShow} membersShow={membersShow} 
                                                 setMemberOperShow={setMemberOperShow} memberOperShow={memberOperShow}
