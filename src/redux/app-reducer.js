@@ -2,10 +2,14 @@
 import { getAuthUserData, setAuthUserData } from "./auth-reducer";
 
 const INITIALIZED_SUCCESS = 'INITIALIZED_SUCCESS';
-
+const ADD_FOCUSED_WINDOW = 'SET_FOCUSED_WINDOWS';
+const CLEAR_FOCUSED_WINDOWS = 'CLEAR_FOCUSED_WINDOWS';
+const CLEAR_CURRENT_FOCUSED_WINDOW = 'CLEAR_CURRENT_FOCUSED_WINDOW';
 
 let initialState = {
     initialized: false,
+    focusedWindows: [],
+    focusedWindowsIds: {fWUsersFCId: 0, fWAddUserFCId: 1, fWMembersId: 2, fWMemberOperationsId: 3}
 };
 
 const appReducer = (state = initialState, action) => {
@@ -17,12 +21,38 @@ const appReducer = (state = initialState, action) => {
                 initialized: true
             }
 
+        case ADD_FOCUSED_WINDOW:
+
+            return {
+                ...state,
+                focusedWindows: [...state.focusedWindows, action.newFocusedWindow]
+            }
+
+        case CLEAR_FOCUSED_WINDOWS:
+            // debugger
+                return {
+                    ...state,
+                    focusedWindows: []
+                }
+        
+        case CLEAR_CURRENT_FOCUSED_WINDOW: 
+            // debugger
+            return {
+                ...state,
+                focusedWindows: state.focusedWindows.filter(window=> window.id !== action.currentWindowId)
+            }
+
         default:
             return state;
     }
 }
 
 export const initializedSuccess = () => ({type: INITIALIZED_SUCCESS })
+
+export const addFocusedWindow = (id, data) => ({type: ADD_FOCUSED_WINDOW, newFocusedWindow: {id: id, data: data} }) // id, data
+export const clearAllFocusedWindows = () => ({type: CLEAR_FOCUSED_WINDOWS})
+export const clearCurrentFocusedWindow = (currentWindowId) => ({type: CLEAR_CURRENT_FOCUSED_WINDOW, currentWindowId})
+
 
 export const initializeApp = () => (dispatch) => {
     // debugger 

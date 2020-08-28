@@ -20,6 +20,48 @@ background: red;
 } */
 
 
+
+.fileImageActivate {
+    /* align-self: center;
+    grid-area: chatsHeaderPhoto; */
+    height: 6vh;
+    width: 8vh;
+}
+.fileImageActivate > img {
+    display: block;
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+    border-radius: 2vw 2vw 2vw 2vw;
+    border: solid black 0.1vh;
+    padding: 0;
+    margin: 0;
+}
+.fileImageActivate > span {
+    display: none;
+}
+.fileImageActivate > button {
+    display: none;
+}
+
+
+
+
+.fileImageDeactivate > img{
+    display: none;
+}
+.fileImageDeactivate > span{
+    display: block;
+}
+.fileImageDeactivate > button{
+    display: block;
+}
+
+
+
+
+
+
 .currentChat {
     /* position: relative; */
     /* padding: 1vh; */
@@ -124,7 +166,7 @@ background: red;
 }
 
 
-
+/*TODOREPLACE*/
 .usersForChatActive{
     display: block;
     position: absolute;
@@ -155,6 +197,7 @@ background: red;
 
 
 
+/*TODOREPLACE*/
 .chatsMembersActive{
     display: block;
     position: absolute;
@@ -253,6 +296,11 @@ background: red;
     grid-template-areas:
     "message";
     grid-template-rows: repeat(auto-fit, 1fr);
+
+    overflow-y: scroll;
+    height: 60vh;
+
+    /* overflow-y: scroll; */
     /* text-align: left;
     align-items: left;  */
 }

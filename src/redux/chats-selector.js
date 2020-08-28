@@ -30,3 +30,22 @@ export const selectCurrentChat = createSelector( selectCurrentChatPS, (chat) => 
     return chat!==null ? {...chat, members: chat.members.map(member => ({...member, photos: replaceQuotes(member.photos)})), chatPhoto: replaceQuotes(chat.chatPhoto)} : null
 })
 
+
+
+
+export const selectFocusedWindowsPS = state => {
+    return  state.app.focusedWindows;//.filter(u => true);
+}
+export const selectFocusedWindowsIdsPS = state => {
+    return  state.app.focusedWindowsIds;//.filter(u => true);
+}
+
+export const selectFocusedWindow = (windowIdKey) => createSelector( selectFocusedWindowsPS, selectFocusedWindowsIdsPS,  (focusedWindows, focusedWindowsIds) => {
+    // debugger
+    return focusedWindows.find(window => window.id === focusedWindowsIds[windowIdKey]) || {'id': focusedWindowsIds[windowIdKey], 'data': null} // {'id':, 'data'}
+})
+
+export const selectFocusedWindowUsersForChat = selectFocusedWindow("fWUsersFCId")
+export const selectFocusedWindowAddUserForChat = selectFocusedWindow("fWAddUserFCId")
+export const selectFocusedWindowMembersForChat = selectFocusedWindow("fWMembersId")
+export const selectFocusedWindowMemberOperationsForChat = selectFocusedWindow("fWMemberOperationsId")

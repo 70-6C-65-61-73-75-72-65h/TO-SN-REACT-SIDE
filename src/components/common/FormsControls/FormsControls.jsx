@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './FormsControls.module.css'
 import { Field } from 'redux-form';
 
 import PropTypes from 'prop-types';
+import { chatsAPI } from '../../../api/api';
 
 
 // import MultiSelect from "react-multi-select-component";
@@ -44,6 +45,147 @@ export const Input = (props) => {
     return (<FormControl {...props}><input {...input} {...restProps}/></FormControl>)
 }
 
+
+
+// export const UploadFiles = ({fileId}) => {
+
+//     const [selectedFiles, setSelectedFiles] = useState(undefined);
+//     const [currentFile, setCurrentFile] = useState(undefined);
+//     const [progress, setProgress] = useState(0);
+//     const [message, setMessage] = useState("");
+
+//     const [fileInfos, setFileInfos] = useState([]);
+
+
+//     const selectFile = (event) => {
+//         setSelectedFiles(event.target.files);
+//       };
+
+//     const upload = () => {
+//         let currentFile = selectedFiles[0];
+    
+//         setProgress(0);
+//         setCurrentFile(currentFile);
+    
+//         chatsAPI.uploadFile(currentFile, (event) => {
+//           setProgress(Math.round((100 * event.loaded) / event.total));
+//         })
+//           .then((response) => {
+//             setMessage(response.data.message);
+//             return chatsAPI.getFile(fileId);
+//           })
+//           .then((files) => {
+//             setFileInfos(files.data);
+//           })
+//           .catch(() => {
+//             setProgress(0);
+//             setMessage("Could not upload the file!");
+//             setCurrentFile(undefined);
+//           });
+    
+//         setSelectedFiles(undefined);
+//       };
+
+//     useEffect(() => {
+//         chatsAPI.getFile(fileId).then((response) => {
+//           setFileInfos(response.data);
+//         });
+//       }, []);
+
+//     return (
+//       <div>
+//         {currentFile && (
+//           <div className="progress">
+//             <div
+//               className="progress-bar progress-bar-info progress-bar-striped"
+//               role="progressbar"
+//               aria-valuenow={progress}
+//               aria-valuemin="0"
+//               aria-valuemax="100"
+//               style={{ width: progress + "%" }}
+//             >
+//               {progress}%
+//             </div>
+//           </div>
+//         )}
+  
+//         <label className="btn btn-default">
+//           <input type="file" onChange={selectFile} />
+//         </label>
+  
+//         <button
+//           className="btn btn-success"
+//           disabled={!selectedFiles}
+//           onClick={upload}
+//         >
+//           Upload
+//         </button>
+  
+//         <div className="alert alert-light" role="alert">
+//           {message}
+//         </div>
+  
+//         <div className="card">
+//           <div className="card-header">List of Files</div>
+//           <ul className="list-group list-group-flush">
+//             {fileInfos &&
+//               fileInfos.map((file, index) => (
+//                 <li className="list-group-item" key={index}>
+//                   <a href={file.url}>{file.name}</a>
+//                 </li>
+//               ))}
+//           </ul>
+//         </div>
+//       </div>
+//     );
+//   };
+
+  
+
+
+// export const FileInput = (props) => {
+//     // TIP there is problems
+    
+//     const { input, meta, child, ...restProps } = props;
+//     return (<FormControl {...props}>  <input {...input} {...restProps}/> </FormControl>)
+
+// }
+// // <input {...input} {...restProps}/> onChange={props.selectFile}
+
+
+export class FileInput extends React.Component {
+  
+    getBase64 = (file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
+    }
+  
+    onFileChange = async (e) => {
+      const { input } = this.props
+      const targetFile = e.target.files[0]
+      if (targetFile) {
+        const val = await this.getBase64(targetFile) 
+        input.onChange({'fileURL': val, 'fileName':targetFile.name})
+      } else {
+        input.onChange(null)
+      }
+    }
+  
+    render() {
+  
+      return (
+        <input
+          type="file"
+          onChange={this.onFileChange}
+        />
+      )
+    }
+  }
+  
 
 // export const MultiSelectWrap = (props) => {
 //     debugger

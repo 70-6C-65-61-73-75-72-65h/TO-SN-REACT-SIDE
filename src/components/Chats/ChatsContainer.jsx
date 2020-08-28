@@ -42,17 +42,22 @@
 
 // // export default DialogsContainer;
 
+// eslint-disable react/jsx-no-duplicate-props
+/* eslint-disable jsx-a11y/anchor-is-valid */
 
 import React, { useEffect, useState } from 'react';
 import { compose } from 'redux';
 import withAuthRedirect from '../../hoc/WithAuthRedirect';
 import { connect } from 'react-redux';
 import { setCurrentChatData, unSetCurrentChatData, getChats, 
-        clearChatMyLocal, clearChatMyGlobal, clearChatAllLocal, clearChatAllGlobal, createConversation, createDialog, requestUsersForChat, renameChatRequest, setChatPhotoRequest, addMember, deleteChatRequest } from '../../redux/chats-reducer';
+        clearChatMyLocal, clearChatMyGlobal, clearChatAllLocal, clearChatAllGlobal, createConversation, createDialog, 
+        // requestUsersForChat, 
+        renameChatRequest, setChatPhotoRequest, addMember, deleteChatRequest } from '../../redux/chats-reducer';
 import Preloader from '../common/Preloader/Preloader';
 import ChatItem from './ChatItem/ChatItem';
 import chatsStyles from './Chats.module.css';
-import { selectChats } from '../../redux/chats-selector';
+import { selectChats, selectFocusedWindowUsersForChat, selectFocusedWindowAddUserForChat, selectFocusedWindowMembersForChat, selectFocusedWindowMemberOperationsForChat } from '../../redux/chats-selector';
+
 import { withRouter } from 'react-router-dom';
 import { reduxForm, formValues } from 'redux-form';
 import { createField, Input, ReduxFormSnippet } from '../common/FormsControls/FormsControls';
@@ -60,6 +65,8 @@ import { maxLength200 } from '../../utils/validators/validators';
  
 import styleMessages from './Message/Message.module.css';
 import UsersContainer from '../Users/UsersContainer';
+import { useRefactorPopUp } from '../../customHooks/focusedElems';
+import { clearCurrentFocusedWindow, addFocusedWindow } from '../../redux/app-reducer';
 
 
 const CreateChatForm = (props) => {
@@ -93,17 +100,52 @@ const CreateChatReduxForm = reduxForm({form:'CreateChat'})(CreateChatForm)
 
 
 
+ 
+export const useUsersSelector = (callbackMethod, keys=[]) => { // ['name'] // props.createConversation
+    const [selectedForChatUsers, setSelectedForChatUsers] = useState([])
+
+    const onSubmit = (formData) => { // keys = ['name', 'photos']
+        // debugger
+        // let sns = Array.isArray(formData['dropDownSelect']) ? formData['dropDownSelect']: [formData['dropDownSelect']]
+        // let sns = Array.isArray(selectedForChatUsers) ? selectedForChatUsers: selectedForChatUsers
+        callbackMethod(selectedForChatUsers, ...keys.map(key=>formData[key])) // if select for create chat -> keys are not null - else null (fro add member to chat)
+    }
+    return [selectedForChatUsers, setSelectedForChatUsers, onSubmit]
+
+}
+
+// export const useUserSelector = (chatTypeId, chatId, callbackMethod) => { //props.addMember
+//     const [selectedForChatUser, setSelectedForChatUser] = useState(null)
+//     const onSubmit = async() => {
+//         console.log('pre api')
+//         await callbackMethod(chatTypeId, chatId, selectedForChatUser)
+//     }
+
+//     // useEffect(() => {
+//     //     if(selectedForChatUser!==null){
+//     //         console.log("adding")
+//     //         onSubmit()
+//     //         setSelectedForChatUser(null) 
+//     //     } else {
+//     //         console.log(" notadding")
+//     //     }
+//     // }, [selectedForChatUser])
+//     return [setSelectedForChatUser ]
+// }
+
+
+
 const ChatsContainer = (props) => {
     const [iF, setIF]= useState(true) // isFetching
-    const [iF2, setIF2]= useState(true) // isFetching
-    const [selectedForChatUsers, setSelectedForChatUsers] = useState([]) // if null -> dont create chat (dialog or conv)
+    // const [iF2, setIF2]= useState(true) // isFetching
+    const [selectedForChatUsers, setSelectedForChatUsers, onSubmit] = useUsersSelector(props.createConversation, ['name'])
 
-    // debugger
     const refreshData = () => {
-        // debugger
-        if (iF2) {
-            setTimeout(async() =>{await props.getChats()}, 10000) // так как обновелния в чатах могут быть и не только с моей стороны но и с чужой
-        }
+        // if (!iF2) {
+        console.log('start refresh')
+        setTimeout(async() =>{await props.getChats()}, 5000) // так как обновелния в чатах могут быть и не только с моей стороны но и с чужой
+        console.log('end refresh')
+        // }
     }
 
     useEffect(() => {
@@ -113,32 +155,27 @@ const ChatsContainer = (props) => {
                 await props.getChats()
                 setIF(false)
             }
-            if(iF2){
-                await props.requestUsersForChat()
-                setIF2(false)
-            }
+            // if(iF2){
+            //     await props.requestUsersForChat()
+            //     setIF2(false)
+            // }
         }
-        // // const fetchUsersToChat = async() => {
-        // //     if(iF2){
-        // //         await props.requestUsersForChat()
-        // //         setIF2(false)
-        // //     }
-        // // }
         fetchData();
-        // fetchUsersToChat();
-    }, [props, iF, iF2])
+    }, [props, iF])//, iF2])
 
     useEffect(() => {
-        // debugger
         refreshData();
-    }, [props.chats])
+        console.log('effect refresh used by changing: ')
+    }, [props])
 
 
-    if(iF || iF2) return <Preloader/>
+    // if(iF || iF2) return <Preloader/>
+    if(iF) return <Preloader/>
     // key `${chat.chatType}_${chat.name}`
-    let chatsElements = [...props.chats.filter(chat => !('sended' in chat.lastMessage)), ...props.chats
-            .filter(chat => 'sended' in chat.lastMessage) // if this is the chat with existing msgs within
-            .sort((chat1, chat2)=> (chat2.lastMessage.sended - chat1.lastMessage.sended))]
+    // let chatsElements = [...(props.chats.filter(chat => !('sended' in chat.lastMessage))).sort((a,b)=>b.chatId - a.chatId), ...props.chats
+    //         .filter(chat => 'sended' in chat.lastMessage) // if this is the chat with existing msgs within
+    //         .sort((chat1, chat2)=> (chat2.lastMessage.sended - chat1.lastMessage.sended))]
+    let chatsElements = props.chats
             .map(chat => <ChatItem lastMessage={chat.lastMessage} 
                 getCountOfNewGlobalMsgs={chat.getCountOfNewGlobalMsgs} 
                 members={chat.members} name={chat.name} 
@@ -152,26 +189,16 @@ const ChatsContainer = (props) => {
                 renameChatRequest={props.renameChatRequest}
                 setChatPhotoRequest={props.setChatPhotoRequest}
                 addMember={props.addMember}
-                snusers={props.OLDsnusers}
+                // snusers={props.OLDsnusers}
                 deleteChatRequest={props.deleteChatRequest}
-                // history={props.history}
-                // isUnmount={props.isUnmount}
+
+                fWAUFC={props.fWAUFC}
+                clearCurrentFocusedWindow={props.clearCurrentFocusedWindow}
+                addFocusedWindow={props.addFocusedWindow}
+
                 />);
-    // console.log(chatsElements)
+ 
 
-
-
-
-    // selectedMembers = []
-    
-    const onSubmit = (formData) => {
-        debugger
-        // let sns = Array.isArray(formData['dropDownSelect']) ? formData['dropDownSelect']: [formData['dropDownSelect']]
-        let sns = Array.isArray(selectedForChatUsers) ? selectedForChatUsers: selectedForChatUsers
-        props.createConversation(sns, formData['name'])
-    }
-
-    //usersForChatActive -> userForChat
     return(
         <>
         <div className={chatsStyles.chats}>
@@ -179,7 +206,38 @@ const ChatsContainer = (props) => {
             <div className={chatsStyles.createChat}>
             <div className={chatsStyles.createChatHeader}>Create Conversation
                 {selectedForChatUsers.length > 1 && <CreateChatReduxForm onSubmit={onSubmit} snusers={props.snusers} myUserId={props.myUserId} /> }
-                {props.usersForChatShow ? 
+
+                {props.fWUFC.data !== null ?
+                    
+                    <div  className={chatsStyles.getMemberList} onClick={(event)=>{event.stopPropagation();}}>
+                        <UsersContainer
+
+                        setSelectedForChatUsers={setSelectedForChatUsers} forChat={true} 
+                        selectedForChatUsers={selectedForChatUsers} 
+                        styleForUsers={styleMessages.usersForChatActive} styleForUser={styleMessages.userForChat}
+                        clearCurrentFocusedWindow={props.clearCurrentFocusedWindow}
+                        fWUFCID = {props.fWUFC.id}
+                        toogleFocuseElem={props.toogleFocuseElem}
+
+                        />
+
+                        {selectedForChatUsers.length === 1 &&  
+                            <a onClick={() => {props.createDialog(selectedForChatUsers[0]); props.clearCurrentFocusedWindow(props.fWUFC.id); }}>Create Dialog</a>}
+                    </div>
+
+                :
+                 
+                    <a className={chatsStyles.getMemberList}  
+                    onClick={
+                        (event)=>{event.stopPropagation();
+                        props.addFocusedWindow(props.fWUFC.id, true);
+                    }}>
+                            Choose Users for Chat
+                    </a>
+
+                }
+
+                {/* {props.usersForChatShow ? 
                 <div  className={chatsStyles.getMemberList} onClick={(event)=>{event.stopPropagation();}}>
                     <UsersContainer
 
@@ -199,7 +257,10 @@ const ChatsContainer = (props) => {
                         onClick={props.toogleFocuseElem(props.setUsersForChatShow, props.usersForChatShow)}>
                             Choose Users for Chat
                     </a>
-                }
+                } */}
+
+
+
             </div>
             </div>
                 <div className={chatsStyles.chatsItems}>
@@ -212,6 +273,7 @@ const ChatsContainer = (props) => {
 }
 // can be lastMessage ={} if no msgs yet, 
 
+
 let mapStateToProps = (state) => ({
     chats: selectChats(state),
     isAuth: state.auth.isAuth,
@@ -222,14 +284,25 @@ let mapStateToProps = (state) => ({
     // state.chatsPage.membersToSelect <- getUsers(page) (subs requestUsersForChat) TODO
     // chatPhotoSmall: selectChatPhotoSmall(state)
     // userId: state.auth.userId,
+    // id - data
+    fWUFC: selectFocusedWindowUsersForChat(state),
+    fWAUFC: selectFocusedWindowAddUserForChat(state),
+    fWMFC: selectFocusedWindowMembersForChat(state),
+    fWMOFC: selectFocusedWindowMemberOperationsForChat(state),
+
+
 })
 
 export default compose(
     withAuthRedirect,
     connect(mapStateToProps, {getChats, setCurrentChatData, unSetCurrentChatData,
         clearChatMyLocal, clearChatMyGlobal, clearChatAllLocal, clearChatAllGlobal,
-        createDialog, createConversation, requestUsersForChat,
-        renameChatRequest, addMember, setChatPhotoRequest, deleteChatRequest}),
+        createDialog, createConversation, 
+        // requestUsersForChat,
+        renameChatRequest, addMember, setChatPhotoRequest, deleteChatRequest,
+
+        addFocusedWindow, clearCurrentFocusedWindow,
+    }),
     withRouter
 )(ChatsContainer);
 

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+        html,
+        body {
+        margin: 0;
+        }
+
+        .observer__target {
+        position: relative;
+        width: 100%;
+        height: 350px;
+        margin: 1500px 0;
+        background: rebeccapurple;
+        }
+
+        .observer__state {
+        position: fixed;
+        top: 1em;
+        left: 1em;
+        color: #111;
+        font: 400 1.125em/1.5 sans-serif;
+        background: #fff;
+        }
+
+        .state__isIntersecting {
+            position: fixed;
+            top: 1em;
+            left: 51em;
+            color: #111;
+            font: 400 1.125em/1.5 sans-serif;
+            background: #fff;
+        }
+</style>
+<body>
+
+
+    <div class="observer__target"></div>
+    <span class="observer__state"></span>
+    <span class="state__isIntersecting"></span>
+
+
+    
+</body>
+<script>
+    const state = document.querySelector('.observer__state')
+    const target = document.querySelector('.observer__target')
+
+    const checkIntersect = document.querySelector('.state__isIntersecting')
+
+
+
+    const thresholdArray = steps => Array(steps + 1)
+    .fill(0)
+    .map((_, index) => index / steps || 0)
+
+    let previousY = 0
+    let previousRatio = 0
+
+    const handleIntersect = entries => {
+        entries.forEach(entry => {
+            const currentY = entry.boundingClientRect.y // наше значение оси у в данный момент ( для сравнения со следующим чтоб понять куда скроллим (вниз-вверх))
+            const currentRatio = entry.intersectionRatio // сколько процентов от всего контента прокручено ( если больше - значи прокручивание вверх ( тоесть вниз))
+            const isIntersecting = entry.isIntersecting // пересикается ли с вьюпортом (областью видимости пользователем)
+
+            checkIntersect.textContent = `isIntersecting: ${isIntersecting}\ncurrentRatio:${currentRatio}`
+
+            // Scrolling down/up
+            if (currentY < previousY) {
+                if (currentRatio > previousRatio && isIntersecting) {
+                    state.textContent ="Scrolling down enter"
+                } else {
+                    state.textContent ="Scrolling down leave"
+                }
+            } else if (currentY > previousY && isIntersecting) {
+                if (currentRatio < previousRatio) {
+                    state.textContent ="Scrolling up leave"
+                } else {
+                    state.textContent ="Scrolling up enter"
+                }
+            }
+
+            previousY = currentY
+            previousRatio = currentRatio
+        })
+    }
+
+    const observer = new IntersectionObserver(handleIntersect, {
+    threshold: thresholdArray(20),
+    })
+
+    observer.observe(target)
+
+</script>
+</html>

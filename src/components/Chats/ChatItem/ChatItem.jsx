@@ -1,3 +1,6 @@
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable jsx-a11y/anchor-is-valid */
+
 import React from 'react';
 import s from './../Chats.module.css';
 import styleMessages from './../Message/Message.module.css';
@@ -9,28 +12,30 @@ import { maxLength200, maxLength1000 } from '../../../utils/validators/validator
 import { reduxForm } from 'redux-form';
 import backupQuotes from '../../common/utils/backupQuotes';
 import { useState } from 'react';
+import UsersContainer from '../../Users/UsersContainer';
+// import { useUserSelector } from '../ChatsContainer';
 
 
 ////////////////////
-const AddChatMemberForm = (props) => {
-    const { handleSubmit, pristine, reset, submitting, error, snusers, chatUsersIds, msgStyle } = props // chatUsersIds - list of ids from chat members
-    // console.log(props)
-    return (
-        <form onSubmit={handleSubmit} className={`${msgStyle} ${s.addBorder}`}>
-        {createField('DropDownSelect', 'dropDownSelect', DropDownSelect, null, {people:  snusers.filter(snuser => !chatUsersIds.includes(snuser.userId))})}
-        <ReduxFormSnippet  pristine={pristine} reset={reset} submitting={submitting} error={error} sumbitButtonName={'Add Member'}/>
-        </form>
-    )
-}
+// const AddChatMemberForm = (props) => {
+//     const { handleSubmit, pristine, reset, submitting, error, snusers, chatUsersIds, msgStyle } = props // chatUsersIds - list of ids from chat members
+//     // console.log(props)
+//     return (
+//         <form onSubmit={handleSubmit} className={`${msgStyle} ${s.addBorder}`}>
+//         {createField('DropDownSelect', 'dropDownSelect', DropDownSelect, null, {people:  snusers.filter(snuser => !chatUsersIds.includes(snuser.userId))})}
+//         <ReduxFormSnippet  pristine={pristine} reset={reset} submitting={submitting} error={error} sumbitButtonName={'Add Member'}/>
+//         </form>
+//     )
+// }
 
-const AddChatMemberFormRedux = reduxForm({form: 'addChatMember'})(AddChatMemberForm)
+// const AddChatMemberFormRedux = reduxForm({form: 'addChatMember'})(AddChatMemberForm)
 
-export const AddChatMember = ({addMember, chatTypeId, chatId, snusers, chatUsersIds, msgStyle=''}) => {
-    const onSubmit = (formData) => {
-        addMember(chatTypeId, chatId, formData['dropDownSelect'])
-    }
-    return  <AddChatMemberFormRedux onSubmit={onSubmit} snusers={snusers} chatUsersIds={chatUsersIds} msgStyle={msgStyle}/>
-}
+// export const AddChatMember = ({addMember, chatTypeId, chatId, snusers, chatUsersIds, msgStyle=''}) => {
+//     const onSubmit = (formData) => {
+//         addMember(chatTypeId, chatId, formData['dropDownSelect'])
+//     }
+//     return  <AddChatMemberFormRedux onSubmit={onSubmit} snusers={snusers} chatUsersIds={chatUsersIds} msgStyle={msgStyle}/>
+// }
 ////////////////////
 
 //////////////////// styleMessages.chatsSettingsItemForm
@@ -97,7 +102,6 @@ export const Member = ({ member, memberStyle, chatMemberSettings=null, setMember
 
 
 
-{/* <Members membersShow={membersShow} members={members} memberOperShow={memberOperShow} memberOpers={memberOpers} /> */}
 export const Members = ({members, membersShow, memberOperShow, selectedMember, memberOpers}) => { // <Member />
     
     return(
@@ -110,10 +114,37 @@ export const Members = ({members, membersShow, memberOperShow, selectedMember, m
         <div className={memberOperShow ? `${styleMessages.smthElseListActive}`: `${s.smthElseList}`}>
             
             {memberOpers.map(memberOper => 
-                <div className={`${styleMessages.subElemMSBs} ${styleMessages.infoItemMSBs}`}><a className={`${styleMessages.membOperLink}`} onClick={memberOper.method(selectedMember)}>{memberOper.name}</a></div>
+                <div className={`${styleMessages.subElemMSBs} ${styleMessages.infoItemMSBs}`}>
+                    <a className={`${styleMessages.membOperLink}`} onClick={memberOper.method(selectedMember)}>{memberOper.name}</a>
+                </div>
             )}
         </div>
         </>
+    )
+}
+
+
+export const SelectMemberToChat = (props) => {
+
+    const onSubmit = (selectedForChatUser) => {
+        console.log('pre api')
+        props.addMember(props.chatTypeId, props.chatId, selectedForChatUser)
+    }
+
+    return (
+        <div  className={s.getMemberList} onClick={(event)=>{event.stopPropagation();}}>
+        <UsersContainer
+        setSelectedForChatUser = {onSubmit} 
+        forChat={true} 
+        styleForUsers={styleMessages.usersForChatActive} 
+        styleForUser={styleMessages.userForChat}
+        fWAUFC={props.fWAUFC}
+        clearCurrentFocusedWindow={props.clearCurrentFocusedWindow}
+        // setUsersForChatShow={setUserForChatShow}
+        // toogleFocuseElemArr={toogleFocuseElemArr} // при выборе юзер - закрываем окно
+        chatUsersIds={props.chatUsersIds}  
+        />
+      </div>
     )
 }
 
@@ -134,12 +165,10 @@ const LastMessage = ({ sended, body, authorName }) => {
 
 const ChatItem = ({ lastMessage, getCountOfNewGlobalMsgs, members, chatType, name, setCurrentChatData, chatTypeId, chatId, chatPhotoSmall, isFetching, 
                     clearChatMyLocal, clearChatMyGlobal, clearChatAllLocal, clearChatAllGlobal,
-                    renameChatRequest, deleteChatRequest, addMember, setChatPhotoRequest, snusers }) => {
+                    renameChatRequest, deleteChatRequest, addMember, setChatPhotoRequest,
+                    ...props  
+                }) => {
 
-
-    // console.log('chatUsersIds')
-    // console.log(members)
-    // console.log(members.map(member => member.id))
 
     const unmout = () => {
         setCurrentChatData(chatTypeId, chatId)
@@ -158,7 +187,25 @@ const ChatItem = ({ lastMessage, getCountOfNewGlobalMsgs, members, chatType, nam
     let chatUsersIds = members.map(member => member.id)
     members = members.map(member => <Member member={member} key={member.id} memberStyle={`${s.member} ${s.subElem2}`} />)
     if(isFetching) return <Preloader />
+    // console.log(userForChatShow)
+    
     return (
+        <>
+        {
+        // add member
+        props.fWAUFC.data !== null && props.fWAUFC.data[1] === chatId && props.fWAUFC.data[0] === chatTypeId  &&
+            <div className={s.addMember}>
+                <div className={s.addMemberHeader}>
+                <SelectMemberToChat addMember={addMember} chatTypeId={chatTypeId} chatId={chatId} chatUsersIds={chatUsersIds}
+                    clearCurrentFocusedWindow={props.clearCurrentFocusedWindow} 
+                    fWAUFC={props.fWAUFC}/>
+                 </div>
+            </div>
+                }
+
+
+
+
         <div className={s.chatItem}>
             <NavLink to={path} className={s.chatItemData} onClick={unmout}>
                 <div className={s.chatItemPhoto}>
@@ -207,47 +254,32 @@ const ChatItem = ({ lastMessage, getCountOfNewGlobalMsgs, members, chatType, nam
                                             <ChangeChatPhoto setChatPhotoRequest={setChatPhotoRequest} chatTypeId={chatTypeId} chatId={chatId}/>
                                         </div>}
                                     </div>
-                                    <div className={`${s.subElem} ${s.infoItem}`}>
-                                        add member
-                                        { chatTypeId === 1 &&
-                                        <div className={s.addMemberItem}>
-                                            <AddChatMember addMember={addMember} snusers={snusers} chatUsersIds={chatUsersIds} chatTypeId={chatTypeId} chatId={chatId}/>
-                                        </div>}
-                                    </div>
-                                    <div className={`${s.deleteChat} ${s.subElem} ${s.infoItem}`}><button onClick={() => clearChatByMethod(deleteChatRequest)}>DELETE CHAT</button></div>
-                                    {/* other methods in chat detail */}
-                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(toogleMemberStatus)}>toogleMemberStatus</button></div> */}
-                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(removeMemberMsgs)}>removeMemberMsgs</button></div> */}
-                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(removeOneMemberMsg)}>removeOneMemberMsg</button></div> */}
-                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(removeMember)}>removeMember</button></div> */}
 
-                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(setChatPhotoRequest)}>New Chat Photo</button></div> */}
-                                    {/* <div className={`${s.subElem} ${s.infoItem}`}><button onClick={() => putChatByMethod(addMember)}>addMember</button></div> */}
-                                    
-                                    
+                                    <div className={`${s.subElem} ${s.infoItem}`}>
+                                        
+
+                                        
+                                    { chatTypeId === 1 &&
+                                    <div className={s.addMemberItem}>
+                                    { props.fWAUFC.data === null  && // make true from false to open element ( but i should push here userId and after by userId show itself user list)
+                                        <a 
+                                        onClick={
+                                            (event) => (event.stopPropagation(), props.addFocusedWindow(props.fWAUFC.id, [chatTypeId, chatId]))
+                                         }> 
+                                            Add Member
+                                        </a>
+                                    }
+                                    </div>
+                                    }
+                                    </div>
+
+                                    <div className={`${s.deleteChat} ${s.subElem} ${s.infoItem}`}><button onClick={() => clearChatByMethod(deleteChatRequest)}>DELETE CHAT</button></div>
                             </div>
                         </div>
-
-
-                        {/* <div className={s.changePhotoChatHeader}>
-                            set chat photo
-                            { chatTypeId === 1 && <div className={s.changePhotoChat}>
-                                <ChangeChatPhoto setChatPhotoRequest={setChatPhotoRequest} chatTypeId={chatTypeId} chatId={chatId}/>
-                            </div>}
-                            
-                        </div> */}
-                        {/* <div className={s.addMemberHeader}>
-                            set chat photo
-                            <div className={s.addMemberItem}>
-                                <AddChatMember addMember={addMember} snusers={snusers} chatUsersIds={members.map(member => member.userId)} chatTypeId={chatTypeId} chatId={chatId}/>
-                            </div>
-                            
-                        </div> */}
-
-
                     </div>
                 </div>
-        </div>)
+        </div> 
+        </>)
 }
 
 export default ChatItem;

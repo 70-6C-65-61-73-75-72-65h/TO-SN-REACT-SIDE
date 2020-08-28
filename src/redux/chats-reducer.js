@@ -1,6 +1,7 @@
 import { chatsAPI, usersAPI } from "../api/api";
 import { stopSubmit } from "redux-form";
 import replaceQuotes from "../components/common/utils/quotes";
+import { idbKeyval } from "../components/common/utils/indexedDB";
 
 const SET_CHATS = 'SET_CHATS';
 const SET_CHATS_ALIAS_MAP = 'SET_CHATS_ALIAS_MAP';
@@ -11,10 +12,18 @@ const EDIT_MESSAGE = 'EDIT_MESSAGE';
 const CURRENT_CHAT_DATA_FETCHING = 'CURRENT_CHAT_DATA_FETCHING';
 const TOOGLE_IS_UNMOUNT = 'TOOGLE_IS_UNMOUNT';
 
-const ADD_USERS_TO_SELECT = 'ADD_USERS_TO_SELECT'
+// const ADD_USERS_TO_SELECT = 'ADD_USERS_TO_SELECT'
 const SET_CURRENT_CHAT_MEMBERS ='SET_CURRENT_CHAT_MEMBERS'
 const SET_CURRENT_CHAT_PHOTO = 'SET_CURRENT_CHAT_PHOTO'
 const SET_CURRENT_CHAT_NAME = 'SET_CURRENT_CHAT_NAME'
+
+
+const SET_READ_FROM_INDEX = 'SET_READ_FROM_INDEX'
+
+// const ADD_FILE_AS_LOADING = 'ADD_FILE_AS_LOADING'
+// const REMOVE_FILE_AS_LOADING = 'REMOVE_FILE_AS_LOADING'
+
+
 let initialState = {
     chatId: null,
     chatTypeId: null,
@@ -23,13 +32,16 @@ let initialState = {
     chats: [], //  "dialogs": [{"id": 1,"name": "Mexus_1"}],"conversations": [{ "id": 1,"name": "HERE WE GO AGAIN" }]
     // messages: [], 
     // newMessageBody: ""
-    currentChat: null,
+    currentChat: null, // + 'readFromIndex'
     isFetching: false,
     isUnmount: false,
 
-    usersToSelect: [],
+    // usersToSelect: [],
 
-    membersToSelect: []
+    membersToSelect: [],
+
+    readFromIndex: null,
+    loadingFilesIds: [],
 };
 
 
@@ -65,11 +77,19 @@ const chatsReducer = (state = initialState, action) => {
             return {...state, currentChat: {...state.currentChat, chatPhoto: action.chatPhoto}}
         }
 
-
-        case ADD_USERS_TO_SELECT: {
-            return {...state, usersToSelect: action.usersToSelect}
+        case SET_READ_FROM_INDEX: {
+            return {...state, readFromIndex: action.readFromIndex}
         }
+        // case ADD_USERS_TO_SELECT: {
+        //     return {...state, usersToSelect: action.usersToSelect}
+        // }
 
+        // case ADD_FILE_AS_LOADING: {
+        //     return {...state, loadingFilesIds: action.fileId}
+        // }
+        // case REMOVE_FILE_AS_LOADING: {
+        //     return {...state, loadingFilesIds: action.fileId} // delete from list of loading and then add url of file to download ( if photo to <img src='api/file/{fileId}'> else only url <a href='api/file/{fileId}')
+        // }
 
         case EDIT_MESSAGE: {
             return {...state, messages: state.messages.map(msg => (msg.id === action.messageId ? { ...msg, body: action.newMessageBody} : msg) ) }
@@ -95,43 +115,55 @@ export const toogleIsUnmount = (isUnmount) => ({type: TOOGLE_IS_UNMOUNT, isUnmou
 
 
 
-export const addUsersToSelect = (usersToSelect) => ({type: ADD_USERS_TO_SELECT, usersToSelect})
+// export const addUsersToSelect = (usersToSelect) => ({type: ADD_USERS_TO_SELECT, usersToSelect})
 
 
 
-export const requestUsersForChat = () => async(dispatch) => {
-    // let result = []
-    // let error = false//{data:{resultCode:0}}
-    // let page = 1 
-    // debugger
-    // do
-    // {
-    //     let response = await usersAPI.getUsers(page);
-    //     debugger
-    //     console.log(response)
-    //     if(response.data.resultCode!==0){
-    //         debugger
-    //         // result.push({'photos': (replaceQuotes(response.data.data.photos)).small,  "userId": response.data.data.userId,  'name': response.data.data.name})
-    //         result.push({"userId": response.data.data.userId,  'name': response.data.data.name})
-    //         page++;
-    //     } else {
-    //         error = true;
-    //     }
-    // } while(!error)
-    // debugger
-    let response = await usersAPI.getUsers(1);
-    let result = []
-    // debugger
-    if(response.data.users.error===null){
-        // debugger
-        // result.push({'photos': (replaceQuotes(response.data.data.photos)).small,  "userId": response.data.data.userId,  'name': response.data.data.name})
-        result = response.data.users.items.map(user => ({"userId": user.userId,  'name': user.name}))
-        // page++;
-    }
-    dispatch(addUsersToSelect(result))
-}
+// export const requestUsersForChat = () => async(dispatch) => {
+//     // let result = []
+//     // let error = false//{data:{resultCode:0}}
+//     // let page = 1 
+//     // debugger
+//     // do
+//     // {
+//     //     let response = await usersAPI.getUsers(page);
+//     //     debugger
+//     //     console.log(response)
+//     //     if(response.data.resultCode!==0){
+//     //         debugger
+//     //         // result.push({'photos': (replaceQuotes(response.data.data.photos)).small,  "userId": response.data.data.userId,  'name': response.data.data.name})
+//     //         result.push({"userId": response.data.data.userId,  'name': response.data.data.name})
+//     //         page++;
+//     //     } else {
+//     //         error = true;
+//     //     }
+//     // } while(!error)
+//     // debugger
+//     let response = await usersAPI.getUsers(1);
+//     let result = []
+//     // debugger
+//     if(response.data.users.error===null){
+//         // debugger
+//         // result.push({'photos': (replaceQuotes(response.data.data.photos)).small,  "userId": response.data.data.userId,  'name': response.data.data.name})
+//         result = response.data.users.items.map(user => ({"userId": user.userId,  'name': user.name}))
+//         // page++;
+//     }
+//     dispatch(addUsersToSelect(result))
+// }
+
+export const setChats = (chats) => ({type: SET_CHATS, chats})
+export const setMessages = (messages) => ({type: SET_MESSAGES, messages})
+export const editMessage = (messageId, newMessageBody) => ({type: EDIT_MESSAGE, messageId, newMessageBody})
 
 
+export const setChatsAliasMap = (chatsAliases) => ({type: SET_CHATS_ALIAS_MAP, chatsAliases})
+
+
+export const setReadFromIndexMsgs = (readFromIndex) => ({type: SET_READ_FROM_INDEX, readFromIndex}) 
+
+
+// export const addFileAsLoading = (fileId) => ({type: ADD_FILE_AS_LOADING, fileId}) 
+// export const removeFileAsLoading = (fileId) => ({type: REMOVE_FILE_AS_LOADING, fileId}) 
 
 
 
@@ -151,7 +183,7 @@ export const unSetCurrentChatData = () => (dispatch) =>{
 }
 
 
-export const getCurrentChatData = () => async(dispatch) =>{
+export const getCurrentChatData = () => async(dispatch) => {
     // debugger
     let chatId = parseInt(localStorage.getItem('chatId') )
     let chatTypeId = parseInt(localStorage.getItem('chatTypeId') )
@@ -176,7 +208,24 @@ export const getCurrentChatData = () => async(dispatch) =>{
             response.data.data["chatType"]=chatType
             response.data.data["chatId"]=chatId
             dispatch(setCurrentChatIdsToStore(chatTypeId, chatId, response.data.data))
-            await dispatch(getMessages(chatTypeId, chatId))
+            // response.data.data + ['readFromIndex'] // 
+            // console.log('checcc')
+            // console.log(response.data)
+            dispatch(setReadFromIndexMsgs(response.data.data.readFromIndex))
+
+            // let msgsResponse = 
+            await dispatch(getMessages(chatTypeId, chatId, response.data.data.readFromIndex)) // first readFromIndex === len(lastMsg) - 10 ( if exist 10 else then -num ( but anyway it less then we need) )
+            // should send 'readFromIndex'
+            // console.log('\n\n\n')
+            // console.log(msgsResponse)
+            // if(msgsResponse.data.resultCode === 0){
+            //     let readFromIndex = msgsResponse.data.data['readFromIndexNext']
+            //     dispatch(setReadFromIndexMsgs(readFromIndex))
+            // } else{
+            //     console.log('msgsResponse error in getCurrentChatData\n\npizdez\n\n')
+            // }
+
+
             // let gettedMessages = await dispatch(getMessages(chatTypeId, chatId)) // repopulate store
             // if(gettedMessages.data.resultCode === 0){
             //     console.log('messages getted')
@@ -193,69 +242,95 @@ export const getCurrentChatData = () => async(dispatch) =>{
 
 
 // setCurrentChatMembers
-export const refreshCurrentChatData = (method, requiredDataKey) => async(dispatch) =>{
+
+export const refreshCurrentChatData = (method, requiredDataKey) => async(dispatch) => {
     let chatId = parseInt(localStorage.getItem('chatId') )
     let chatTypeId = parseInt(localStorage.getItem('chatTypeId') )
     let response = await chatsAPI.getChat(chatTypeId, chatId)
     if(response.data.resultCode === 0){
         dispatch(method(response.data.data[requiredDataKey]))
     } else {
-        console.log('getCurrentChatData Error in getChat'+ response.data.messages[0])
+        console.log('refreshCurrentChatData Error in getChat'+ response.data.messages[0])
     }
 }
 
 
-export const setChats = (chats) => ({type: SET_CHATS, chats})
-export const setMessages = (messages) => ({type: SET_MESSAGES, messages})
-export const editMessage = (messageId, newMessageBody) => ({type: EDIT_MESSAGE, messageId, newMessageBody})
 
 
-export const setChatsAliasMap = (chatsAliases) => ({type: SET_CHATS_ALIAS_MAP, chatsAliases})
 
-const getChatHelper = async(chatType, chatTypeId, chatArray) => {
+
+// const getChatHelper = async(chatType, chatTypeId, chatArray) => {
+//     let unfilteredArray = await Promise.all(chatArray
+//         .map(async (chat) => {
+//         let response = await chatsAPI.getChat(chatTypeId, chat.id)
+//         if(response.data.resultCode === 0){
+//             response.data.data["chatTypeId"]=chatTypeId
+//             response.data.data["chatType"]=chatType
+//             response.data.data["chatId"]=chat.id
+//             return response.data.data
+//         } else {
+//             console.log('getChat Error '+ response.data.messages[0])
+//             return null
+//         }
+//         } ))
+//     return unfilteredArray.filter(chat => chat!==null)
+//     }
+        
+
+
+const getChatHelper = async(chatArray) => {
     let unfilteredArray = await Promise.all(chatArray
         .map(async (chat) => {
-        let response = await chatsAPI.getChat(chatTypeId, chat.id)
+        let response = await chatsAPI.getChat(chat.chatTypeId, chat.id)
         if(response.data.resultCode === 0){
-            response.data.data["chatTypeId"]=chatTypeId
-            response.data.data["chatType"]=chatType
+            response.data.data["chatTypeId"] = chat.chatTypeId
             response.data.data["chatId"]=chat.id
+            response.data.data["chatTimeStamp"]=chat.chatTimeStamp
+            if(chat.chatTypeId===0){
+                response.data.data["chatType"]='dialog'
+            } else{
+                response.data.data["chatType"]='conversation'
+            }
             return response.data.data
         } else {
             console.log('getChat Error '+ response.data.messages[0])
             return null
         }
         } ))
-    return unfilteredArray.filter(chat => chat!==null)
+    // return unfilteredArray.filter(chat => chat!==null)
+    return unfilteredArray.sort((chat1,chat2)=>chat2.chatTimeStamp - chat1.chatTimeStamp)
     }
-        
 
-
-
-export const getChats = () => async(dispatch) => {
+export const getChats = (page=1, query=null) => async(dispatch) => {
     // debugger
-    let response = await chatsAPI.getChats(); // chatTypeId, chatId// =>
+    let response = await chatsAPI.getChats(page, query); // chatTypeId, chatId// =>
     if(response.data.resultCode === 0){
-        let dialogs = await getChatHelper('dialog', 0, response.data.data.dialogs)
-        let conversations = await getChatHelper('conversation', 1, response.data.data.conversations)
-        let chats = [...dialogs, ...conversations]
-        console.log(chats)
+        // let dialogs = await getChatHelper('dialog', 0, response.data.data.dialogs)
+        // let conversations = await getChatHelper('conversation', 1, response.data.data.conversations)
+        // let chats = [...dialogs, ...conversations]
+        // console.log(chats)
+        let chats = await getChatHelper(response.data.data.chats.items)
         dispatch(setChats(chats))
-
     } else {
         console.log('getChats error '+ response.data.messages[0])
     }
 }
 
 // чтобы не хранить кучу данных мы не дописываем в свойства сообщений чат к которому они относятся
-const getMessagesHelper = (array, readed, chatTypeId, chatId) => array.map(msg => (msg[readed]=readed, msg[chatTypeId]=chatTypeId, msg[chatId]=chatId, msg))
+const getMessagesHelper = (array, chatTypeId, chatId) => array.map(msg => (msg[chatTypeId]=chatTypeId, msg[chatId]=chatId, msg))
 
-export const getMessages = (chatTypeId, chatId) =>  async(dispatch) => {
-    let response = await chatsAPI.getMessages(chatTypeId, chatId);
+
+// TODO c set start position of view messages on last readed and then after scroll setting 1 by 1 msgs as viewed
+export const getMessages = (chatTypeId, chatId, readFromIndex, query=null) =>  async(dispatch) => {
+    let response = await chatsAPI.getMessages(chatTypeId, chatId, readFromIndex, query);
     if(response.data.resultCode === 0){
+        // console.log(`getMessages.response.data.data`);
+        // console.log(response.data)
         // TODO move to chats-selector
-        let allMsgs = [...getMessagesHelper(response.data.data.oldMsgs, true, chatTypeId, chatId), ...getMessagesHelper(response.data.data.newMsgs, false)].sort((msg1, msg2) => msg1.sended - msg2.sended)
+        // let allMsgs = [...getMessagesHelper(response.data.data.oldMsgs, true, chatTypeId, chatId), ...getMessagesHelper(response.data.data.newMsgs, false)].sort((msg1, msg2) => msg1.sended - msg2.sended)
+        let allMsgs = getMessagesHelper(response.data.data.items, chatTypeId, chatId) // readed changed to msgViewed
         dispatch(setMessages(allMsgs))
+        dispatch(setReadFromIndexMsgs(response.data.data['readFromIndexNext']))
     } else {
         console.log('getMessages error '+ response.data.messages[0])
     }
@@ -263,15 +338,61 @@ export const getMessages = (chatTypeId, chatId) =>  async(dispatch) => {
 
 
 
-export const createMessageRequest = (chatTypeId, chatId, messageBody) => async(dispatch) => {
+export const getFile = (fileId) => async(dispatch) => {
+    let downloadedFile = await chatsAPI.getFile(fileId)
+    console.log("downloadedFile")
+    console.log(downloadedFile)
+    return downloadedFile.data
+    // return downloadedFile
+}
 
-    let response = await chatsAPI.createMessage(chatTypeId, chatId, messageBody);
+// export const downloadFile = (filePath) => async(dispatch) => {
+//     let file = await chatsAPI.downloadFile(filePath)
+//     // return file
+// }
+
+// then TODO download files to idb to use after from idb not from server!!!!!!
+// export const downloadFilesToContent = (fileId) => async(dispatch)  => {
+//     // dispatch(addFileAsLoading(fileId))
+//     let downloadedFile = await chatsAPI.getFile(fileId)
+//     console.log("downloadedFile")
+//     console.log(downloadedFile)
+//     if(downloadedFile.data.resultCode === 0){
+//         idbKeyval.set(`fileId_${fileId}`, downloadedFile.data.file) // may use `fileId_${fileId}` ,
+//         // dispatch(downloadedFile.data.file) // fileId
+//     }
+//     // dispatch(removeFileAsLoading(fileId))
+// }
+
+const createMessageSnippent = async(chatTypeId, chatId, messageBody, fileId, dispatch) => {
+    let response = await chatsAPI.createMessage(chatTypeId, chatId, messageBody, fileId);
     if(response.data.resultCode === 0){
         // dispatch(getMessages(chatTypeId, chatId))
     } else {
         let message = response.data.messages.length  ? response.data.messages[0] : 'Some error';
         dispatch(stopSubmit("CreateMessage", {_error: message}));
     }
+}
+
+export const createMessageRequest = (chatTypeId, chatId, messageBody, file=null) => async(dispatch) => {
+    console.log('in createMessageRequest')
+    console.log(file)
+    if (file!==null){
+        // let fileUploadResponse = await chatsAPI.uploadFile(file) // TIP there is problems
+        let fileUploadResponse = await chatsAPI.uploadFile(file['fileURL'], file['fileName'])
+        console.log(`fileUploadResponse.data`);
+        console.log(fileUploadResponse.data.data)
+        if(fileUploadResponse.data.data['fileId']){
+            // console.log(fileUploadResponse.data.data['fileId'])
+            createMessageSnippent(chatTypeId, chatId, messageBody, fileUploadResponse.data.data['fileId'], dispatch)
+        } else {
+            console.log('fileUploadResponse error')
+            console.log(Object.keys(fileUploadResponse.data.data))
+        }
+    } else {
+        createMessageSnippent(chatTypeId, chatId, messageBody, null, dispatch)
+    }
+    
 }
 
 export const editMessageRequest = (chatTypeId, chatId, messageId, newMessageBody) => async(dispatch) =>{
@@ -393,6 +514,8 @@ export const toogleMemberStatus = (chatTypeId, chatId, userId, putType='toogleMe
 }
 
 export const addMember = (chatTypeId, chatId, userId, putType='addMember') => async(dispatch) => {
+    console.log('adding member')
+    console.log(chatTypeId, chatId, userId)
     // let response = await chatsAPI.addMemberForConversation(chatTypeId, chatId, putType, userId)
     // if(response.data.resultCode === 0){
     //     console.log('member added: ' + response.data.data.memberAdded)

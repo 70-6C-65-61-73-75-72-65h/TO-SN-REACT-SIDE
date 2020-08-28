@@ -4,6 +4,9 @@ import { idbKeyval } from '../components/common/utils/indexedDB';
 
 const instance = axios.create({
     baseURL: 'http://127.0.0.1:8000/',
+    headers: {
+        "Content-type": "application/json"
+      }
 })
 
 instance.interceptors.request.use(
@@ -105,8 +108,10 @@ export const chatsAPI = {
     },
 
 
-    getChats(){
-        return instance.get('api/chats/')
+    getChats(page, query){
+        return query===null ? 
+            instance.get(`api/chats/?page=${page}`) :
+            instance.get(`api/chats/?page=${page}&query=${query}`)
     },
     createChat(snusers, name=null){ // snusers can be list of integers or integer
         return name!==null ? 
@@ -126,7 +131,7 @@ export const chatsAPI = {
     renameChat(chatTypeId, chatId, putType, newChatName){ 
         return this.chatPut(chatTypeId, chatId, putType, 'newChatName', newChatName) // 'rename'
     },
-    updateUnreadMsgs(chatTypeId, chatId, putType, lastGlobalReadMsgId){ 
+    updateUnreadMsgs(chatTypeId, chatId, putType, lastGlobalReadMsgId){ // ---------------------------------------------------------------------------------------------
         return this.chatPut(chatTypeId, chatId, putType, 'lastGlobalReadMsgId', lastGlobalReadMsgId) // 'updateUnreadMsgs'
     },
     // for conv only
@@ -151,12 +156,68 @@ export const chatsAPI = {
     },
 
     //messages
-    getMessages(chatTypeId, chatId){
-        return instance.get(`api/chats/${chatTypeId}/${chatId}/messages/`)
+    getMessages(chatTypeId, chatId, readFromIndex, query){
+        // console.log(query)
+        return query===null ?
+            instance.get(`api/chats/${chatTypeId}/${chatId}/messages/?readFromIndex=${readFromIndex}`) :
+            instance.get(`api/chats/${chatTypeId}/${chatId}/messages/?readFromIndex=${readFromIndex}&query=${query}`)
+            // instance.get(`api/chats/${chatTypeId}/${chatId}/messages/?page=${page}`) :
+            // instance.get(`api/chats/${chatTypeId}/${chatId}/messages/?page=${page}&query=${query}`)
     },
-    createMessage(chatTypeId, chatId, messageBody){
-        return instance.post(`api/chats/${chatTypeId}/${chatId}/messages/create/`, {messageBody})
+    createMessage(chatTypeId, chatId, messageBody, fileId=null){
+        // console.log({messageBody, fileId})
+        return instance.post(`api/chats/${chatTypeId}/${chatId}/messages/create/`, {messageBody, fileId})
     },
+
+
+    // uploadFile(file){
+    //     let formData = new FormData();
+    //     formData.append("file", file);
+    //     return instance.post(`api/file/`, formData, {
+    //         headers: {
+    //             "Content-Type": "multipart/form-data",
+    //           }
+    //         //   ,
+    //         //   onUploadProgress,
+    //     })
+    // },
+
+    // can ask for files only from current chat to load 
+    getFile( fileId ) {
+        return instance.get(`api/files/${fileId}`);
+    },
+    // downloadFile(filePath) {
+    //     return instance.get(`media/${filePath}`);
+    // },
+
+
+    // may just change it to json file:blob
+    // uploadFile( file ){
+    //     let formData = new FormData();
+    //     formData.append("file", file);
+    //     return instance.post(`api/files/`, formData, {
+    //         headers: {
+    //             "Content-Type": "multipart/form-data",
+    //           }
+    //     })
+    // },
+    uploadFile( fileURL, fileName ){
+        return instance.post(`api/files/`, {fileURL, fileName})
+    },
+    // TIP there is problems
+    // uploadFile( file, onUploadProgress ){
+    //         let formData = new FormData();
+    //         formData.append("file", file);
+    //         return instance.post(`api/files/`, formData, {
+    //             headers: {
+    //                 "Content-Type": "multipart/form-data",
+    //               }
+    //               ,
+    //               onUploadProgress,
+    //         })
+    //     },
+
+
     editMessage(chatTypeId, chatId, messageId, newMessageBody){
         // debugger
         console.log(`api/chats/${chatTypeId}/${chatId}/messages/${messageId}/`)

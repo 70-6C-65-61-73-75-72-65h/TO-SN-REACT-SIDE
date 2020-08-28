@@ -28,6 +28,9 @@ import { useUsersEffects } from '../../customHooks/usersHooks';
 //     return queried
 // }
 
+// chatUsersIds // filter list
+// onClick={() => {props.toogleFocuseElem(props.setUsersForChatShow, props.usersForChatShow);onSubmit();}} // blur memberlist -> send to api request
+
 
 
 const UsersContainer = (props) => {
@@ -35,19 +38,30 @@ const UsersContainer = (props) => {
     // const [query, setQuery] = useState('')
     // const { currentPage, pageSize } = props;
     const [onPageChanged] = useUsersEffects(props.getUsers, props.searchUsers, props.query, props.currentPage, props.pageSize)
-    
+
+    // debugger
+    // console.log(props.chatUsersIds)
 
     return (<div className={props.styleForUsers ? props.styleForUsers: ''}>
         {props.isFetching ? <Preloader /> : null}
         <div >
             <UsersSearch/>
         </div>
-        {props.forChat ?  
-        <a onClick={props.toogleFocuseElem(props.setUsersForChatShow, props.usersForChatShow)}>
-            End Selection
-        </a>: null}
+        { props.fWUFCID === 0 ? 
+        //props.forChat && props.setSelectedForChatUsers ?  
         
-        <Users totalUsersCount={props.totalUsersCount}
+        
+        // <a onClick={props.toogleFocuseElem(props.setUsersForChatShow, props.usersForChatShow)}>
+        //     End Selection
+        // </a>
+        <a onClick={ () =>  props.clearCurrentFocusedWindow(props.fWUFCID) }>
+            End Selection
+        </a>
+        : null}
+        
+        <Users 
+        
+            totalUsersCount={props.totalUsersCount}
             pageSize={props.pageSize}
             currentPage={props.currentPage}
             onPageChanged={onPageChanged}
@@ -58,10 +72,24 @@ const UsersContainer = (props) => {
 
 
             forChat = {props.forChat}
-            setSelectedForChatUsers = {props.setSelectedForChatUsers}
-            selectedForChatUsers={props.selectedForChatUsers}
+
+
+            setSelectedForChatUsers = {props.setSelectedForChatUsers} // can be undef if it member adding
+            setSelectedForChatUser = {props.setSelectedForChatUser} // can be undef if it chat creation
+            chatUsersIds = {props.chatUsersIds} // can be undef if it chat creation
+
+            // toogleFocuseElemArr={props.toogleFocuseElemArr}
+            // usersForChatShow={props.usersForChatShow} 
+
+            
+            // setUsersForChatShow={props.setUsersForChatShow} // can be undef if it chat creation
+            fWAUFC={props.fWAUFC}
+            clearCurrentFocusedWindow={props.clearCurrentFocusedWindow}
+
+
+            selectedForChatUsers={props.selectedForChatUsers} // can be undef if it member adding
             styleForUsers= {props.styleForUsers}
-            styleForUser={props.styleForUsers}
+            styleForUser={props.styleForUser}
         />
     </div>)
 }

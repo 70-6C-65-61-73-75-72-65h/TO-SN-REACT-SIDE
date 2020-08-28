@@ -64,11 +64,33 @@ background: red;
     grid-template-rows: 1fr 1fr;
 }
 
+
+
+.addMember {
+    position: absolute;
+
+    display: grid;
+    grid-template-areas:
+    "addMemberHeader getMemberList";
+    /* "createChatForm"; */
+    grid-template-rows: 1fr 1fr;
+}
+
 .getMemberList {
     position: relative;
     height: 100%;
     color: red;
 }
+
+.addMemberHeader {
+    color: white;
+    position: absolute;
+    height: 100%;
+}
+
+
+
+
 
 .createChatHeader {
     color: white;
@@ -115,7 +137,7 @@ background: red;
 
     display: grid;
     grid-template-areas:
-    "chatItemData chatSettings";
+    " chatItemData chatSettings";
     grid-template-columns: 6fr 1fr;
 }
 

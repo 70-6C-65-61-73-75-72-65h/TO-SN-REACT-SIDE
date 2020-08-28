@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    html,
+    body {
+    margin: 0;
+    }
+
+    .observer__target {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    margin: 1500px 0;
+    background: rebeccapurple;
+    }
+
+    .observer__state {
+        position: fixed;
+        top: 1em;
+        left: 1em;
+        color: #111;
+        font: 400 1.125em/1.5 sans-serif;
+        background: #fff;
+        }
+
+    .createNewMsgs {
+    position: fixed;
+    top: 1em;
+    left: 51em;
+    color: #111;
+    font: 400 1.125em/1.5 sans-serif;
+    background: #fff;
+    }
+
+    .messageToObserve{
+        color: green;
+    }
+
+    .newMsgs{
+        position: relative;
+        margin: 1500px 0;
+    }
+
+</style>
+<body>
+    <button class="createNewMsgs" onclick="createNewMsgs()">createNewMsgs</button>
+    <div class="observer__state"></div>
+    <!-- <div class="observer__target"></div> -->
+    <div class='newMsgs'></div>
+    <!-- style="color: blue; margin:4vh;" -->
+
+</body>
+
+
+<script>
+
+    // setTimeout(
+    //     function checkMsgclasses(){
+    //     console.log(document.querySelectorAll('.messageToObserve').length)
+    //     setTimeout(checkMsgclasses, 2000)},
+    //  2000)
+
+    const loadMsgs = () => {
+
+        const state = document.querySelector('.observer__state')
+        const targets = document.querySelectorAll('.messageToObserve')
+        console.log(targets)
+
+        const thresholdArray = steps => Array(steps + 1)
+        .fill(0)
+        .map((_, index) => index / steps || 0)
+
+        let previousY = 0
+        // let previousRatio = 0
+
+        const handleIntersect = (entries, observer) => {
+            entries.forEach(entry => {
+                const isIntersecting = entry.isIntersecting
+                const currentY = entry.boundingClientRect.y
+                if(isIntersecting){
+                    // console.log(entry)
+                    state.textContent = "Message viewed: " + entry.target.innerText ;//"Message viewed: " + entry.innerText 
+                    entry.target.classList.remove('messageToObserve');
+                    // updateUnreadMsg(entry.target.id) // id === message.id
+                    observer.unobserve(entry.target)
+                    
+                }
+                previousY = currentY
+            })
+        }
+        targets.forEach(target => 
+            {
+                const observer = new IntersectionObserver(handleIntersect, {threshold: thresholdArray(20)})
+                observer.observe(target)
+            });
+
+    }
+
+    const unobserveMsg = (observer, target) => {
+        unobserve
+    }
+
+
+    loadMsgs()
+
+
+    const createNewMsgs = (size=10) => {
+        let msgs = document.querySelector('.newMsgs')
+        let divs = [...Array(size).keys()]
+            .map(elem => document.createElement('div'))
+            .map(elem => ( elem.setAttribute("style", "color:red; padding-top:4vh; height:20vh; width:100%;"), elem.classList.add('messageToObserve'), elem) )
+            .map((tag, index) => (tag.innerText=`Message #${index}`, msgs.appendChild(tag) ) )
+            // .map((tag, index) => msgs.appendChild(tag.appendChild(document.createTextNode(`Message #${index}`))))
+        // .map(elt => (elt.style.cssText = "color: blue; border: 1px solid black",elt) )
+        loadMsgs()
+    }
+
+    
+
+</script>
+
+</html>

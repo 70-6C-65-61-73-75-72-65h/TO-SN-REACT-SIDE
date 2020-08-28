@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useState}  from 'react';
 import styles from '../../common/FormsControls/FormsControls.module.css'
-import { createField, TextArea } from '../../common/FormsControls/FormsControls';
+import { createField, TextArea, FileInput, Input } from '../../common/FormsControls/FormsControls';
 import { maxLength1000 } from '../../../utils/validators/validators';
 import { reduxForm } from 'redux-form';
 import { compose } from 'redux';
@@ -10,9 +10,34 @@ import { createMessageRequest  } from '../../../redux/chats-reducer';
 
 const CreateMessageForm = props => {
     const { handleSubmit, pristine, reset, submitting, error } = props
+
+
+    // const [selectedFiles, setSelectedFiles] = useState(undefined);
+    // const selectFile = (event) => {
+    //   setSelectedFiles(event.target.files);
+    // };
+
+
+    // const [file, setFile] = useState({
+    //     selectedFiles: undefined,
+    //     currentFile: undefined,
+    //     progress: 0,
+    //     message: "",
+  
+    //     fileInfos: [],
+    //   })
+
+    // const selectFile = (ev) => {
+    //     setFile({
+    //         selectedFiles: ev.target.files,
+    //     });
+    // }
+
+    // TIP there is problems
     return (
         <form onSubmit={handleSubmit}>
             {createField('Write a message...', 'messageBody', TextArea, [maxLength1000])}
+            {createField('Upload a file...', 'uploadedFile', FileInput, null, {type: "file"})} 
             {
             error && 
             <div className={styles.formSummaryError}>
@@ -33,8 +58,9 @@ const CreateMessageReduxForm = reduxForm({form: 'CreateMessage'})(CreateMessageF
 
 const CreateMessage = (props) => {
     const onSubmit = (formData) => {
-        // debugger
-        props.createMessageRequest(props.chatTypeId, props.chatId, formData["messageBody"])
+        formData["uploadedFile"] ?
+            props.createMessageRequest(props.chatTypeId, props.chatId, formData["messageBody"], formData["uploadedFile"]) :
+            props.createMessageRequest(props.chatTypeId, props.chatId, formData["messageBody"])
     }
     return (
         <div className=''>
@@ -44,10 +70,6 @@ const CreateMessage = (props) => {
     )
 }
 
-// let mapStateToProps = state => ({
-//     isAuth: state.auth.isAuth,
-
-// })
 
 export default compose(
     withAuthRedirect,

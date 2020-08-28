@@ -10,11 +10,16 @@ import Profile from './components/Profile/Profile';
 import Login from './components/Login/Login';
 import UpdateProfile from './components/Profile/UpdateDeleteProfile/UpdateProfile';
 import Preloader from './components/common/Preloader/Preloader';
-import { initializeApp } from './redux/app-reducer';
+import { initializeApp, clearAllFocusedWindows } from './redux/app-reducer';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import ChatDetail from './components/Chats/ChatItem/ChatDetail';
-import { useAllFocusedElems } from './customHooks/focusedElems';
+import { useAllFocusedElems, useRefactorPopUp } from './customHooks/focusedElems';
+
+
+
+import messageStyles from './components/Chats/Message/Message.module.css';
+
 
 // import SignUpContainer from './components/Auth/SignUpContainer';
 // import Logout from './components/Auth/Logout';
@@ -43,19 +48,49 @@ import { useAllFocusedElems } from './customHooks/focusedElems';
 
 
 const App = React.memo((props) => {
-        const [membersShow, setMembersShow, memberOperShow, setMemberOperShow, usersForChatShow, setUsersForChatShow] = useAllFocusedElems()
+        // const [membersShow, setMembersShow, memberOperShow, setMemberOperShow, usersForChatShow, setUsersForChatShow, userForChatShow, setUserForChatShow] = useAllFocusedElems()
 
-        const falseAllFocusedElems = () => {
-                setMembersShow(false)
-                setMemberOperShow(false)
-                setUsersForChatShow(false)
-        }
-        const toogleFocuseElem = (method, elem) => (event) => {
+        // const classToBlur = '';
+
+        // const classToFocus = messageStyles.usersForChatActive;
+        // useRefactorPopUp
                 // console.log(event.target)
-                // console.log(elem)
-                event.stopPropagation()
-                method(!elem)
-        }
+                // debugger
+                
+                // console.log(event.tagret.value)
+                // console.log(event.tagret.classList)
+                // console.log(event.tagret.classList.contains(classToFocus))
+                // console.log(event.tagret.classList.contains('usersForChatActive'))
+                // event.tagret.classList.contains('usersForChatActive') && event.tagret.classList.toggle('usersForChatActive') 
+
+        // const unfocusWindows = () => { 
+        //         props.clearFocusedWindows()   
+        // }
+
+
+
+
+        // const falseAllFocusedElems = () => {
+        //         setMembersShow(false)
+        //         setMemberOperShow(false)
+        //         setUsersForChatShow(false)
+
+        //         setUserForChatShow([])// int to bool false
+        // }
+        // const toogleFocuseElem = (method, elem) => (event) => {
+        //         // console.log(event.target)
+        //         // console.log(elem)
+        //         event.stopPropagation()
+        //         method(!elem)
+        // }
+
+        // const toogleFocuseElemArr = (method,newData) => (event) => {
+        //         // console.log(event.target)
+        //         console.log('hereerere')
+        //         event.stopPropagation()
+        //         method(newData)
+                
+        // }
 
         // const toogleFocuseElem = (method, elem) => (event) => {
         //         console.log(event.target)
@@ -69,7 +104,7 @@ const App = React.memo((props) => {
         useEffect(() => {props.initializeApp()}, [])
         if((!props.initialized)) return <Preloader/>
         return (
-                <div className='whole-app-page-wrapper' onClick={()=>{falseAllFocusedElems()}}>
+                <div className='whole-app-page-wrapper' onClick={()=>{ props.clearAllFocusedWindows()   }}>
                 <div className='app-wrapper'>
                         <Header />
                         <Navbar />
@@ -82,13 +117,32 @@ const App = React.memo((props) => {
                         <Route path='/users'
                                 render={() => <UsersContainer />} />
                         <Route exact path='/chats'
-                                render={() => <ChatsContainer  usersForChatShow={usersForChatShow} 
-                                                                setUsersForChatShow={setUsersForChatShow}
-                                                                toogleFocuseElem={toogleFocuseElem}/>} />
+                                render={() => <ChatsContainer  
+                                                                // usersForChatShow={usersForChatShow} 
+                                                                // setUsersForChatShow={setUsersForChatShow}
+
+                                                                // userForChatShow={userForChatShow} 
+                                                                // setUserForChatShow={setUserForChatShow}
+
+                                                                // toogleFocuseElem={toogleFocuseElem}
+                                                                // toogleFocuseElemArr={toogleFocuseElemArr}
+
+
+
+                                                                // blurFocusedWindow={blurFocusedWindow}
+                                                                />} />
                         <Route path='/chats/:chatType/:name?'
-                                render={() => <ChatDetail setMembersShow={setMembersShow} membersShow={membersShow} 
-                                                setMemberOperShow={setMemberOperShow} memberOperShow={memberOperShow}
-                                                toogleFocuseElem={toogleFocuseElem}/>} />
+                                render={() => <ChatDetail 
+                                        // setMembersShow={setMembersShow} membersShow={membersShow} 
+                                        //         setMemberOperShow={setMemberOperShow} memberOperShow={memberOperShow}
+                                                // toogleFocuseElem={toogleFocuseElem}
+
+                                                // toogleFocuseElemArr={toogleFocuseElemArr}
+                                                
+
+                                                // userForChatShow={userForChatShow} 
+                                                // setUserForChatShow={setUserForChatShow}
+                                                                />} />
                         </div>
                 </div>
                 </div>
@@ -102,7 +156,9 @@ const mapStateToProps = (state) => ({
 
 export default compose(
         withRouter,
-        connect(mapStateToProps, {initializeApp})
+        connect(mapStateToProps, {initializeApp,
+                clearAllFocusedWindows
+        })
  )(App);
 
 
