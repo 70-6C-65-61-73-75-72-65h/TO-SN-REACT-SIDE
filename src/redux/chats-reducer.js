@@ -18,10 +18,30 @@ const SET_CURRENT_CHAT_PHOTO = 'SET_CURRENT_CHAT_PHOTO'
 const SET_CURRENT_CHAT_NAME = 'SET_CURRENT_CHAT_NAME'
 
 
-const SET_READ_FROM_INDEX = 'SET_READ_FROM_INDEX'
+// const SET_READ_FROM_INDEX = 'SET_READ_FROM_INDEX'
+// const SET_READ_FROM_INDEX_NEXT = 'SET_READ_FROM_INDEX_NEXT'
+const SET_READ_FROM_INDEXES = 'SET_READ_FROM_INDEXES'
+// const SET_LOADING_ON_SCROLL = 'SET_LOADING_ON_SCROLL'
+const SET_FETCHING_MSGS = 'SET_FETCHING_MSGS'
 
+// const SET_OLD_MSGS_DOWNLOAD = 'SET_OLD_MSGS_DOWNLOAD'
+
+// const SET_FIRST_OF_LAST_SET_MSGS_ID = 'SET_FIRST_OF_LAST_SET_MSGS_ID'
+// const SET_FIRST_OF_SET_MSGS_ID = 'SET_FIRST_OF_SET_MSGS_ID'
+
+// const SET_FIRST_AND_LAST_OF_SET_MSGS_ID = 'SET_FIRST_AND_LAST_OF_SET_MSGS_ID'
+// const SET_PREFETCH_CC = 'SET_PREFETCH_CC'
 // const ADD_FILE_AS_LOADING = 'ADD_FILE_AS_LOADING'
 // const REMOVE_FILE_AS_LOADING = 'REMOVE_FILE_AS_LOADING'
+
+const SHOULD_WINDOW_SCROLL_DOWN = 'SHOULD_WINDOW_SCROLL_DOWN'
+const SET_MESSAGE_CREATING = 'SET_MESSAGE_CREATING'
+const SET_REFRESH_AFTER_MESSAGE_CREATING = 'SET_REFRESH_AFTER_MESSAGE_CREATING'
+
+
+// // const SET_REFRESH_AFTER_DM = 'SET_REFRESH_AFTER_DM' 
+const INC_NUM_OF_DELETED_MSGS = 'INC_NUM_OF_DELETED_MSGS'
+const NULL_NUM_OF_DELETED_MSGS = 'NULL_NUM_OF_DELETED_MSGS'
 
 
 let initialState = {
@@ -41,12 +61,43 @@ let initialState = {
     membersToSelect: [],
 
     readFromIndex: null,
+    readFromIndexNext: null,
+    readFromIndexBefore: null,
+    // loadingOnScroll: true,
+    IsFetchingMsgs: false,
     loadingFilesIds: [],
+
+    // oldMsgsDonwload: false,
+
+    // firstOfLastSetOfMsgsId: null,
+    // firstOfSetOfMsgsId: null,
+
+
+    windowScrollOnMsgCreate: false,
+    // preFetchCC: false,
+    isMessageCreating: false,
+
+    isRefreshedAfterMC: false,
+
+    // isRefreshedAfterDM: false,
+    numOfDeletedMsgs: 0,
 };
 
 
 const chatsReducer = (state = initialState, action) => {
     switch (action.type) {
+
+        case INC_NUM_OF_DELETED_MSGS: {
+            let nodm = state.numOfDeletedMsgs + 1
+            return {...state, numOfDeletedMsgs: nodm} // SET_NUM_OF_DELETED_MSGS
+        }
+        case NULL_NUM_OF_DELETED_MSGS: {
+            let nodm = 0
+            return {...state, numOfDeletedMsgs: nodm} // SET_NUM_OF_DELETED_MSGS
+        }
+
+
+
         case SET_CHATS: {
             return {...state, chats: action.chats} //
         }
@@ -77,9 +128,56 @@ const chatsReducer = (state = initialState, action) => {
             return {...state, currentChat: {...state.currentChat, chatPhoto: action.chatPhoto}}
         }
 
-        case SET_READ_FROM_INDEX: {
-            return {...state, readFromIndex: action.readFromIndex}
+        // case SET_READ_FROM_INDEX: {
+        //     return {...state, readFromIndex: action.readFromIndex}
+        // }
+        // case SET_READ_FROM_INDEX_NEXT: {
+        //     return {...state, readFromIndexNext: action.readFromIndexNext}
+        // }
+
+        case SET_READ_FROM_INDEXES: {
+            return {...state, readFromIndex: action.readFromIndex, readFromIndexNext: action.readFromIndexNext, readFromIndexBefore: action.readFromIndexBefore}  
         }
+        // case SET_LOADING_ON_SCROLL: {
+        //     return {...state, loadingOnScroll: action.loadingOnScroll}
+        // }
+        case SET_FETCHING_MSGS : {
+            return {...state, IsFetchingMsgs: action.IsFetchingMsgs} 
+        }
+
+        // case SET_OLD_MSGS_DOWNLOAD: {
+        //     return {...state, oldMsgsDonwload: action.oldMsgsDonwload}
+        // }
+
+
+        // case SET_FIRST_AND_LAST_OF_SET_MSGS_ID: {
+        //     return {...state, firstOfSetOfMsgsId: action.firstOfSetOfMsgsId, firstOfLastSetOfMsgsId: action.firstOfLastSetOfMsgsId}
+        // }
+
+        case SHOULD_WINDOW_SCROLL_DOWN : {
+            return {...state, windowScrollOnMsgCreate: action.windowScrollOnMsgCreate} 
+        }
+
+        // case SET_FIRST_OF_SET_MSGS_ID: {
+        //     return {...state, firstOfSetOfMsgsId: action.firstOfSetOfMsgsId}
+        // }
+
+        // case SET_FIRST_OF_LAST_SET_MSGS_ID: {
+        //     return {...state, firstOfLastSetOfMsgsId: action.firstOfLastSetOfMsgsId}
+        // }
+
+        case SET_MESSAGE_CREATING : {
+            return {...state, isMessageCreating: action.isMessageCreating} 
+        }
+        case SET_REFRESH_AFTER_MESSAGE_CREATING: {
+            return {...state, isRefreshedAfterMC: action.isRefreshedAfterMC} 
+        }
+        // case SET_REFRESH_AFTER_DM: {
+        //     return {...state, isRefreshedAfterDM: action.isRefreshedAfterDM} 
+        // }
+        // case SET_PREFETCH_CC : {
+        //     return {...state, preFetchCC: action.preFetchCC}
+        // }
         // case ADD_USERS_TO_SELECT: {
         //     return {...state, usersToSelect: action.usersToSelect}
         // }
@@ -159,13 +257,43 @@ export const editMessage = (messageId, newMessageBody) => ({type: EDIT_MESSAGE, 
 export const setChatsAliasMap = (chatsAliases) => ({type: SET_CHATS_ALIAS_MAP, chatsAliases})
 
 
-export const setReadFromIndexMsgs = (readFromIndex) => ({type: SET_READ_FROM_INDEX, readFromIndex}) 
+// export const setReadFromIndexMsgs = (readFromIndex) => ({type: SET_READ_FROM_INDEX, readFromIndex}) 
+// export const setReadFromIndexNextMsgs = (readFromIndexNext) => ({type: SET_READ_FROM_INDEX_NEXT, readFromIndexNext}) 
 
+export const setReadFromIndexes = (readFromIndex, readFromIndexNext, readFromIndexBefore) => ({type: SET_READ_FROM_INDEXES, readFromIndex, readFromIndexNext, readFromIndexBefore}) 
+
+
+// export const setLoadingOnScroll = (loadingOnScroll) => ({type: SET_LOADING_ON_SCROLL, loadingOnScroll})
+export const setFetchingMoreMsgs = (IsFetchingMsgs) => ({type: SET_FETCHING_MSGS, IsFetchingMsgs})
+
+// export const setOldMsgsDonwload = (oldMsgsDonwload) =>({type: SET_OLD_MSGS_DOWNLOAD, oldMsgsDonwload})
+
+
+// export const setFirsANDLastSetOfMsgsId = (firstOfSetOfMsgsId, firstOfLastSetOfMsgsId) =>({type: SET_FIRST_AND_LAST_OF_SET_MSGS_ID, firstOfSetOfMsgsId, firstOfLastSetOfMsgsId})
+
+
+
+export const shouldWindowScrollDown =  (windowScrollOnMsgCreate) => ({type: SHOULD_WINDOW_SCROLL_DOWN, windowScrollOnMsgCreate})
+// export const setFirstOfSetOfMsgsId = (firstOfSetOfMsgsId) =>({type: SET_FIRST_OF_SET_MSGS_ID, firstOfSetOfMsgsId})
+// export const setFirstOfLastSetOfMsgsId = (firstOfLastSetOfMsgsId) =>({type: SET_FIRST_OF_LAST_SET_MSGS_ID, firstOfLastSetOfMsgsId})
+export const setMessageCreating = (isMessageCreating) => ({type: SET_MESSAGE_CREATING, isMessageCreating})
+export const setRefreshMessageCreating = (isRefreshedAfterMC) => ({type: SET_REFRESH_AFTER_MESSAGE_CREATING, isRefreshedAfterMC})
+
+export const incNumOfDeletedMsgs = () => ({type: INC_NUM_OF_DELETED_MSGS})
+export const nullNumOfDeletedMsgs = () => ({type: NULL_NUM_OF_DELETED_MSGS})
+
+// export const setRefreshAfterDM = (isRefreshedAfterDM) => ({type: SET_REFRESH_AFTER_DM, isRefreshedAfterDM})
+// export const setPreFetchCC = (preFetchCC) => ({type: SET_PREFETCH_CC, preFetchCC})
 
 // export const addFileAsLoading = (fileId) => ({type: ADD_FILE_AS_LOADING, fileId}) 
 // export const removeFileAsLoading = (fileId) => ({type: REMOVE_FILE_AS_LOADING, fileId}) 
 
 
+
+// export const fetchMoreOldMsgs = (chatTypeId, chatId, readFromIndexNext, firstOfSetOfMsgsId ) => async(dispatch) => { 
+//     await dispatch(getMessages(chatTypeId, chatId, readFromIndexNext, firstOfSetOfMsgsId ))
+//     // dispatch(setOldMsgsDonwload(false))
+// }
 
 export const setCurrentChatData = (chatTypeId, chatId) => (dispatch) =>{
     dispatch(currentChatDataFetching(true))
@@ -174,8 +302,6 @@ export const setCurrentChatData = (chatTypeId, chatId) => (dispatch) =>{
     dispatch(currentChatDataFetching(false))
 }
 
-
-
 export const unSetCurrentChatData = () => (dispatch) =>{
     delete localStorage['chatId']
     delete localStorage['chatTypeId']
@@ -183,7 +309,20 @@ export const unSetCurrentChatData = () => (dispatch) =>{
 }
 
 
+// const checkOnScrollTop = (response, readFromIndex, dispatch) => {
+//     if(response.data.resultCode === 0){
+//         if(response.data.data.readFromIndexNext === readFromIndex){
+//             dispatch(setLoadingOnScroll(false)) // if scrolled to the top - infinity scroll stop
+//         }
+//         dispatch(setReadFromIndexMsgs(readFromIndex))
+//         dispatch(setReadFromIndexNextMsgs(response.data.data.readFromIndexNext))
+//     }
+// }
+
+
 export const getCurrentChatData = () => async(dispatch) => {
+    dispatch(setFetchingMoreMsgs(true))
+    // console.log('getCurrentChatData call')
     // debugger
     let chatId = parseInt(localStorage.getItem('chatId') )
     let chatTypeId = parseInt(localStorage.getItem('chatTypeId') )
@@ -192,13 +331,14 @@ export const getCurrentChatData = () => async(dispatch) => {
     let response = await chatsAPI.getChat(chatTypeId, chatId)
     if(response.data.resultCode === 0){
         // debugger
+        // console.log(`firstNewMsgID: ${response.data.data.firstNewMsgID}`)
         let isUpdated = 'local';
-        console.log(response.data.data)
+        // console.log(response.data.data)
         if(!('local' in response.data.data.lastMessage)){
-            console.log('pizdez no local in lastMessage in getCurrentChatData')
+            console.log('not local lastMessage in getCurrentChatData')
         }
         else if (!response.data.data.lastMessage.local){
-            console.log('not here')
+            // console.log('not here')
             isUpdated = await dispatch(updateUnreadMsgs(chatTypeId, chatId, response.data.data.lastMessage.id))
         }
         // debugger
@@ -207,37 +347,20 @@ export const getCurrentChatData = () => async(dispatch) => {
             response.data.data["chatTypeId"]=chatTypeId
             response.data.data["chatType"]=chatType
             response.data.data["chatId"]=chatId
-            dispatch(setCurrentChatIdsToStore(chatTypeId, chatId, response.data.data))
-            // response.data.data + ['readFromIndex'] // 
-            // console.log('checcc')
-            // console.log(response.data)
-            dispatch(setReadFromIndexMsgs(response.data.data.readFromIndex))
-
-            // let msgsResponse = 
-            await dispatch(getMessages(chatTypeId, chatId, response.data.data.readFromIndex)) // first readFromIndex === len(lastMsg) - 10 ( if exist 10 else then -num ( but anyway it less then we need) )
-            // should send 'readFromIndex'
-            // console.log('\n\n\n')
-            // console.log(msgsResponse)
-            // if(msgsResponse.data.resultCode === 0){
-            //     let readFromIndex = msgsResponse.data.data['readFromIndexNext']
-            //     dispatch(setReadFromIndexMsgs(readFromIndex))
-            // } else{
-            //     console.log('msgsResponse error in getCurrentChatData\n\npizdez\n\n')
-            // }
-
-
-            // let gettedMessages = await dispatch(getMessages(chatTypeId, chatId)) // repopulate store
-            // if(gettedMessages.data.resultCode === 0){
-            //     console.log('messages getted')
-            // } else {
-            //     console.log('getCurrentChatData Error in getMessages'+ gettedMessages.data.messages[0])
-            // }
+            dispatch(setCurrentChatIdsToStore(chatTypeId, chatId, response.data.data)) 
+            await dispatch(getMessages(chatTypeId, chatId, response.data.data.readFromIndex, response.data.data.readFromIndexBefore)) // отсюда получили readFromIndex (равен 0 в первый раз???) (проперти rfi получило значение 0 ( так как зарядило None))
         }  else {
             console.log('getCurrentChatData Error in updateUnreadMsgs'+ isUpdated.data.messages[0])
         }
     } else {
         console.log('getCurrentChatData Error in getChat'+ response.data.messages[0])
     }
+    // debugger
+    // console.log('getCurrentChatData end call')
+    // dispatch(setPreFetchCC(true))
+    // console.log('setPreFetchCC as true')
+    // debugger
+    dispatch(setFetchingMoreMsgs(false))
 }
 
 
@@ -321,19 +444,86 @@ const getMessagesHelper = (array, chatTypeId, chatId) => array.map(msg => (msg[c
 
 
 // TODO c set start position of view messages on last readed and then after scroll setting 1 by 1 msgs as viewed
-export const getMessages = (chatTypeId, chatId, readFromIndex, query=null) =>  async(dispatch) => {
-    let response = await chatsAPI.getMessages(chatTypeId, chatId, readFromIndex, query);
+// for first load set firstOfSetOfMsgsId, firstOfLastSetOfMsgsId as null -ed
+
+// after page reload from chats\ => by getCCD null-ed firstOfSetOfMsgsId=null, firstOfLastSetOfMsgsId=null -> so we can restart count of that indexes ///// /, numOfDeletedMsgs=0
+export const getMessages = (chatTypeId, chatId, readFromIndex, readFromIndexBefore,
+    //   firstOfSetOfMsgsId=null,  
+                            query=null, isRefreshAfterMsgCreating=null, numOfDeletedMsgs=0) =>  async(dispatch) => {
+
+
+    //  response.data.data.readFromIndexBefore !==  readFromIndexBefore -> old msgs download ( and we fetch with readFromIndex=readFromIndexNext)
+
+
+    // if (response.data.data.readFromIndexBefore ===  readFromIndexBefore && response.data.data.readFromIndexNext !==  readFromIndexBefore)
+
+    // let kek = fromWhere;
+    // console.log('from '+ kek)
+    // debugger // in this function changing state -> so it re-runs render of page but not like 1 action - so it not good and can affect on some vals that relative to part of its data
+    dispatch(setFetchingMoreMsgs(true))
+    if(numOfDeletedMsgs > 0){
+        dispatch(nullNumOfDeletedMsgs())
+    }
+    let response = await chatsAPI.getMessages(chatTypeId, chatId, readFromIndex, readFromIndexBefore, query, numOfDeletedMsgs);
     if(response.data.resultCode === 0){
         // console.log(`getMessages.response.data.data`);
         // console.log(response.data)
         // TODO move to chats-selector
         // let allMsgs = [...getMessagesHelper(response.data.data.oldMsgs, true, chatTypeId, chatId), ...getMessagesHelper(response.data.data.newMsgs, false)].sort((msg1, msg2) => msg1.sended - msg2.sended)
         let allMsgs = getMessagesHelper(response.data.data.items, chatTypeId, chatId) // readed changed to msgViewed
+
+        // if(allMsgs.length > 0){
+        //     // зачистим старый ласт мсджс при getCurrentChatData // if we start again from the chats page (so redux state wasnt deleted)
+        //     // if(firstOfSetOfMsgsId === null){
+        //     //     dispatch(setFirstOfLastSetOfMsgsId(null, null))
+        //     // }
+        //     // console.log('first of the list id') // should be 73 for the first time
+        //     // console.log(allMsgs[0].id)
+
+
+        //     // if(readFromIndexBefore !== allMsgs[0].id){/ // значит прогрузка старых, а не рефреш
+        //     //     if(firstOfSetOfMsgsId !== null){
+        //     //         dispatch(setFirsANDLastSetOfMsgsId(allMsgs[0].id, firstOfSetOfMsgsId))
+        //     //     } else {
+        //     //         dispatch(setFirsANDLastSetOfMsgsId(allMsgs[0].id, null))
+        //     //     }
+        //     // }
+
+
+            
+        // } else {
+        //     // no msgs in chat yet ( or you delete all of them)
+        //     // only for the first time can set vals as 0 
+        //     // for getCurrentChatData - while it calling -> firstOfSetOfMsgsId=null => if no msgs getted -> we can set  .firstOfLastSetOfMsgsId and pops.firstOfSetOfMsgsId as (0, 0)
+        //     // все равно не будет в апи читать с 0-го индекса - будет просто сортировка от 0-и выше ( даже если удалено локально ссобщения и там считывание идеt с иднекса)
+        //     // if(firstOfSetOfMsgsId === null){  // GCCD
+        //     //     dispatch(setFirsANDLastSetOfMsgsId(0, 0))
+        //     // }
+        // }
+
         dispatch(setMessages(allMsgs))
-        dispatch(setReadFromIndexMsgs(response.data.data['readFromIndexNext']))
+
+        if(allMsgs.length > 0){
+            dispatch(setReadFromIndexes(allMsgs[0].id, response.data.data.readFromIndexNext, response.data.data.readFromIndexBefore))    
+        } else { // can be only after refresh
+            dispatch(setReadFromIndexes(readFromIndex, response.data.data.readFromIndexNext, response.data.data.readFromIndexBefore))    
+        }
+        
+        
+        if(isRefreshAfterMsgCreating){
+            dispatch(shouldWindowScrollDown(false))
+            dispatch(setRefreshMessageCreating(true))
+        }
+
+
+        
+        // checkOnScrollTop(response, readFromIndex, dispatch)
     } else {
         console.log('getMessages error '+ response.data.messages[0])
     }
+    
+    // if()
+    dispatch(setFetchingMoreMsgs(false))
 }
 
 
@@ -367,6 +557,7 @@ export const getFile = (fileId) => async(dispatch) => {
 const createMessageSnippent = async(chatTypeId, chatId, messageBody, fileId, dispatch) => {
     let response = await chatsAPI.createMessage(chatTypeId, chatId, messageBody, fileId);
     if(response.data.resultCode === 0){
+        dispatch(shouldWindowScrollDown(true))
         // dispatch(getMessages(chatTypeId, chatId))
     } else {
         let message = response.data.messages.length  ? response.data.messages[0] : 'Some error';
@@ -375,6 +566,7 @@ const createMessageSnippent = async(chatTypeId, chatId, messageBody, fileId, dis
 }
 
 export const createMessageRequest = (chatTypeId, chatId, messageBody, file=null) => async(dispatch) => {
+    dispatch(setMessageCreating(true))
     console.log('in createMessageRequest')
     console.log(file)
     if (file!==null){
@@ -392,6 +584,7 @@ export const createMessageRequest = (chatTypeId, chatId, messageBody, file=null)
     } else {
         createMessageSnippent(chatTypeId, chatId, messageBody, null, dispatch)
     }
+    dispatch(setMessageCreating(false))
     
 }
 
@@ -407,12 +600,18 @@ export const editMessageRequest = (chatTypeId, chatId, messageId, newMessageBody
 
 
 export const deleteMessageRequest = (chatTypeId, chatId, messageId) =>  async(dispatch) =>{
+    // ref={
+    // debugger
+    dispatch(setFetchingMoreMsgs(true))
     let response = await chatsAPI.deleteMessage(chatTypeId, chatId, messageId);
-    if(response.data === ''){
+    if(response.data.data === null){
         console.log('succs deleted')
+        // dispatch(setRefreshAfterDM(true))
+        dispatch(incNumOfDeletedMsgs())
     } else {
         console.log('deleteMessageRequest deleted '+ response.data.messages[0])
     }
+    dispatch(setFetchingMoreMsgs(false))
 }
 
 
@@ -440,10 +639,10 @@ export const clearChatAllGlobal = (chatTypeId, chatId, putType='clear', clearTyp
 
 
 export const updateUnreadMsgs = (chatTypeId, chatId, lastGlobalReadMsgId, putType='updateUnreadMsgs') => async(dispatch) => {
-    console.log('updateUnreadMsgs')
-    console.log(chatTypeId, chatId, lastGlobalReadMsgId, putType='updateUnreadMsgs')
+    // console.log('updateUnreadMsgs')
+    // console.log(chatTypeId, chatId, lastGlobalReadMsgId, putType='updateUnreadMsgs')
     let response = await chatsAPI.updateUnreadMsgs(chatTypeId, chatId, putType, lastGlobalReadMsgId)
-    console.log(response.data)
+    // console.log(response.data)
     // debugger
     if(response.data.resultCode === 0){
         console.log('updateUnreadMsgs updated')

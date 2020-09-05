@@ -57,11 +57,15 @@ background: red;
     display: block;
 }
 
+.messageFile {
+    grid-area:messageFile;
+    position: absolute;
+}
 
 
 
 
-
+/* err */
 .currentChat {
     /* position: relative; */
     /* padding: 1vh; */
@@ -71,9 +75,10 @@ background: red;
     grid-template-areas:
     "chatsHeader"
     "messages"
+    "trash"
     "createMessageForm";
 
-    grid-template-rows: 10vh 1fr 15vh;
+    grid-template-rows: 10vh 60vh 3vh 20vh;
     /* align-items: center; */
     /* text-align: left; */
     /* padding: 1vh; */
@@ -83,6 +88,10 @@ background: red;
     /* color: green; */
 }
 
+
+.trash {
+    grid-area:trash;
+}
 
 .chatsHeader {
     /* display: grid; */
@@ -288,6 +297,7 @@ background: red;
 
 }
 
+/* err */
 .messages {
     color:rgb(255, 0, 98);
     display: grid;
@@ -295,25 +305,68 @@ background: red;
     grid-area: messages;
     grid-template-areas:
     "message";
-    grid-template-rows: repeat(auto-fit, 1fr);
-
+    grid-template-rows: repeat(auto-fill, minmax(10vh, 1fr));
+    /* overflow:auto; */
     overflow-y: scroll;
-    height: 60vh;
+    /* overflow-y: scroll; */
+    /* overflow-y: hidden;  */
+    /* height: 100%; */
 
     /* overflow-y: scroll; */
     /* text-align: left;
     align-items: left;  */
 }
 
+
+/* .msgViewed {
+    background-color: rgb(9, 83, 9);
+} */
+
+/* .msgNotViewed {
+    background-color: rgb(9, 83, 9);
+} */
+
+.loadOldMsgsDiv { 
+    position: relative;
+    display: grid;
+    height: 5vh;
+    color: yellow;
+    text-align: center;
+    font-style: italic;
+    font-size: 500;
+}
+
+.startChatDiv {
+    position: relative;
+    display: grid;
+    height: 5vh;
+    color: rgb(3, 3, 3);
+    text-align: center;
+    font-style: italic;
+    font-size: 500;
+}
+
+
+.newMsgsStartTag { 
+    position: relative;
+    display: grid;
+    height: 5vh;
+    color: green;
+    text-align: center;
+    font-style: italic;
+    font-size: 500;
+}
+
 .message {
+    position: relative;
     /* color: red; */
     display: grid;
     /* display: grid; */
     grid-template-areas:
     "messageAuthorName messageBody messageSendedEdited"
-    ". . deleteMessage";
+    ". messageFile deleteMessage";
     grid-template-columns: 15vh 1fr 20vh;
-    grid-template-rows: 1fr 5vh;
+    grid-template-rows: 1fr 8vh;
     border: solid black 0.3vh;
     border-radius: 2vw 2vw 2vw 2vw;
     padding-left: 2vh;

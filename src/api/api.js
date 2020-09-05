@@ -156,11 +156,16 @@ export const chatsAPI = {
     },
 
     //messages
-    getMessages(chatTypeId, chatId, readFromIndex, query){
+    getMessages(chatTypeId, chatId, readFromIndex, readFromIndexBefore, query, numOfDeletedMsgs){
         // console.log(query)
-        return query===null ?
-            instance.get(`api/chats/${chatTypeId}/${chatId}/messages/?readFromIndex=${readFromIndex}`) :
-            instance.get(`api/chats/${chatTypeId}/${chatId}/messages/?readFromIndex=${readFromIndex}&query=${query}`)
+        return  numOfDeletedMsgs === null ?
+            query===null ?
+            instance.get(`api/chats/${chatTypeId}/${chatId}/messages/?readFromIndex=${readFromIndex}&readFromIndexBefore=${readFromIndexBefore}`) :
+            instance.get(`api/chats/${chatTypeId}/${chatId}/messages/?readFromIndex=${readFromIndex}&readFromIndexBefore=${readFromIndexBefore}&query=${query}`) 
+            :
+            query===null ?
+            instance.get(`api/chats/${chatTypeId}/${chatId}/messages/?readFromIndex=${readFromIndex}&readFromIndexBefore=${readFromIndexBefore}&numOfDeletedMsgs=${numOfDeletedMsgs}`) :
+            instance.get(`api/chats/${chatTypeId}/${chatId}/messages/?readFromIndex=${readFromIndex}&readFromIndexBefore=${readFromIndexBefore}&query=${query}&numOfDeletedMsgs=${numOfDeletedMsgs}`) 
             // instance.get(`api/chats/${chatTypeId}/${chatId}/messages/?page=${page}`) :
             // instance.get(`api/chats/${chatTypeId}/${chatId}/messages/?page=${page}&query=${query}`)
     },

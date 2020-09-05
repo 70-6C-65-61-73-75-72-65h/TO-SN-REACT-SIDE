@@ -54,6 +54,11 @@ const CreateMessageForm = props => {
     )
 }
 
+
+const msgCreationStyleForm = {
+    color: 'green'
+}
+
 const CreateMessageReduxForm = reduxForm({form: 'CreateMessage'})(CreateMessageForm)
 
 const CreateMessage = (props) => {
@@ -64,7 +69,7 @@ const CreateMessage = (props) => {
     }
     return (
         <div className=''>
-            <div className=''>Message:</div>
+            <div style={msgCreationStyleForm}>Message:</div>
             <CreateMessageReduxForm onSubmit={onSubmit}/>   
         </div>
     )

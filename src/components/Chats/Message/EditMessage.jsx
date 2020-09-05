@@ -7,6 +7,31 @@ import { maxLength1000 } from '../../../utils/validators/validators';
 import { saveAs } from 'file-saver';
 
 
+const EditMessageActive = ({isInvalid, onMBChange, deactivateEditMode, editedMessage, charCount}) => {
+    return (<div className={styleMessages.editMessage}>
+        <textarea className={isInvalid ? `${styleMessages.editField} ${styleMessages.error}`: `${styleMessages.editField}`} onChange={onMBChange} autoFocus={true} onBlur={deactivateEditMode}
+            value={editedMessage} />
+        {
+            isInvalid && <div className={styleMessages.errorField}>Invalid Data</div>
+        }
+        <div className={styleMessages.countChars}>{charCount}</div>
+    </div>)
+}
+
+const EditMessageInactive = ({fileId, activateEditMode, messageBody, fileImageURL, loadFile, ENSM}) => { 
+    if (fileId){
+        return ( <div className={styleMessages.messageBody} onDoubleClick={!ENSM? activateEditMode: undefined}> {messageBody} 
+            <div className={`${styleMessages.messageFile} ${fileImageURL===null ? styleMessages.fileImageDeactivate : styleMessages.fileImageActivate}`}>
+                        <span>+ fileId: {fileId}</span>
+                        <button onClick={()=>loadFile(fileId)}>GetFile</button> 
+                        <img src={fileImageURL}/>
+                </div>
+            </div>)
+    } else {
+        return (<div className={styleMessages.messageBody} onDoubleClick={!ENSM? activateEditMode: undefined}>{messageBody}</div>)
+    }
+    
+}
 
 function urltoFile(url, filename, mimeType){
     return (fetch(url)
@@ -50,38 +75,14 @@ export const EditMessage = ({messageBody, editMessage, ENSM, fileId, getFile}) =
         }
         
     }
-    return (
-        <>
-            {!ENSM ?
-                <>
-                    {!editMode &&
-                    fileId ? <div className={styleMessages.messageBody} onDoubleClick={activateEditMode} > {messageBody} 
-                            <div className={fileImageURL===null ? styleMessages.fileImageDeactivate : styleMessages.fileImageActivate}>
-                                        <span>+ fileId: {fileId}</span>
-                                        <button onClick={()=>loadFile(fileId)}>GetFile</button> 
-                                        <img src={fileImageURL}/>
-                                </div>
-                            </div>
-
-                        : 
-                        <div className={styleMessages.messageBody} onDoubleClick={activateEditMode}>{messageBody}</div>
-                    }
-                    {editMode &&
-                        <div className={styleMessages.editMessage}>
-                            <textarea className={isInvalid ? `${styleMessages.editField} ${styleMessages.error}`: `${styleMessages.editField}`} onChange={onMBChange} autoFocus={true} onBlur={deactivateEditMode}
-                                value={editedMessage} />
-                            {
-                                isInvalid && <div className={styleMessages.errorField}>Invalid Data</div>
-                            }
-                            <div className={styleMessages.countChars}>{charCount}</div>
-                        </div>
-                    }
-                </>
-                :
-                <>
-                    {fileId ? <div className={styleMessages.messageBody}>{messageBody} + fileId: {fileId} <button onClick={loadFile(fileId)}>GetFile</button></div> : <div className={styleMessages.messageBody}>{messageBody}</div>}
-                </>
-            }
-        </>
+    return ( 
+            <>
+                {!editMode && 
+                <EditMessageInactive fileId={fileId} activateEditMode={activateEditMode} messageBody={messageBody} fileImageURL={fileImageURL} loadFile={loadFile.bind(this)} ENSM={ENSM}/>
+                }
+                {editMode &&
+                <EditMessageActive isInvalid={isInvalid} onMBChange={onMBChange} deactivateEditMode={deactivateEditMode} editedMessage={editedMessage} charCount={charCount} />
+                }
+            </>  
     )
 }
