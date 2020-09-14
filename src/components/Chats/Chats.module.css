@@ -74,6 +74,7 @@ background: red;
     "addMemberHeader getMemberList";
     /* "createChatForm"; */
     grid-template-rows: 1fr 1fr;
+    z-index: 9999;
 }
 
 .getMemberList {

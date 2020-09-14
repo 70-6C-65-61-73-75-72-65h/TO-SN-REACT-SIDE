@@ -153,9 +153,12 @@ export const Input = (props) => {
 // // <input {...input} {...restProps}/> onChange={props.selectFile}
 
 
-export class FileInput extends React.Component {
-  
-    getBase64 = (file) => {
+// export class FileInput extends React.Component {
+export const FileInput = (props) => {
+
+    const { input, meta, child, ...restProps } = props;
+
+    const getBase64 = (file) => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -164,26 +167,29 @@ export class FileInput extends React.Component {
       });
     }
   
-    onFileChange = async (e) => {
-      const { input } = this.props
+    const onFileChange = async (e) => {
+      const { input } = props
       const targetFile = e.target.files[0]
       if (targetFile) {
-        const val = await this.getBase64(targetFile) 
+        const val = await getBase64(targetFile) 
         input.onChange({'fileURL': val, 'fileName':targetFile.name})
       } else {
         input.onChange(null)
       }
     }
   
-    render() {
+    // render() {
   
       return (
-        <input
+    //   <>
+        <input 
           type="file"
-          onChange={this.onFileChange}
+          onChange={onFileChange}
+        //   {...input} {...restProps}
         />
+        
       )
-    }
+    // }
   }
   
 

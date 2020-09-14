@@ -131,6 +131,7 @@ background: red;
     grid-template-areas:
     "chatsSettingsItem";
     grid-template-rows: repeat(auto-fit, 1fr);
+    z-index: 9999;
 }
 
 .chatsSettings {
@@ -152,6 +153,8 @@ background: red;
     display: block;
     position: absolute;
     left: 16vh;
+    z-index: inherit;
+    background-color: white;
 }
 
 .chatsSettingsItem:hover > .chatsSettingsItemH {
@@ -223,6 +226,7 @@ background: red;
     grid-template-areas:
     "chatMember chatMemberSettings";
     grid-template-rows: repeat(auto-fit, 1fr 0.2fr);
+    z-index: 9999;
 }
 
 /* .chatsMembersHeader > button:active .chatsMembers{
@@ -515,6 +519,7 @@ background: red;
     "infoItemMSBs";
     grid-template-rows: repeat(auto-fit, 1fr);
     color: red;
+    z-index: 9999;
 }
 
 
