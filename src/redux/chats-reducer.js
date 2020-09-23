@@ -1,7 +1,8 @@
 import { chatsAPI, usersAPI } from "../api/api";
-import { stopSubmit } from "redux-form";
+import { stopSubmit, reset } from "redux-form";
 import replaceQuotes from "../components/common/utils/quotes";
 import { idbKeyval } from "../components/common/utils/indexedDB";
+import {saveAs} from "file-saver";
 
 const SET_CHATS = 'SET_CHATS';
 const SET_CHATS_ALIAS_MAP = 'SET_CHATS_ALIAS_MAP';
@@ -43,6 +44,7 @@ const SET_REFRESH_AFTER_MESSAGE_CREATING = 'SET_REFRESH_AFTER_MESSAGE_CREATING'
 const INC_NUM_OF_DELETED_MSGS = 'INC_NUM_OF_DELETED_MSGS'
 const NULL_NUM_OF_DELETED_MSGS = 'NULL_NUM_OF_DELETED_MSGS'
 
+const SET_IDB_KEY_IN_MESSAGE = 'SET_IDB_KEY_IN_MESSAGE'
 
 let initialState = {
     chatId: null,
@@ -172,6 +174,10 @@ const chatsReducer = (state = initialState, action) => {
         case SET_REFRESH_AFTER_MESSAGE_CREATING: {
             return {...state, isRefreshedAfterMC: action.isRefreshedAfterMC} 
         }
+
+        case SET_IDB_KEY_IN_MESSAGE: {
+            return {...state, messages: action.idbFileMessageKey} 
+        }
         // case SET_REFRESH_AFTER_DM: {
         //     return {...state, isRefreshedAfterDM: action.isRefreshedAfterDM} 
         // }
@@ -210,6 +216,77 @@ export const setCurrentChatIdsToStore = (chatTypeId, chatId, currentChat) => ({t
 export const currentChatDataFetching = (isFetching) => ({type: CURRENT_CHAT_DATA_FETCHING, isFetching})
 
 export const toogleIsUnmount = (isUnmount) => ({type: TOOGLE_IS_UNMOUNT, isUnmount})
+
+
+
+export const setIDBKeyInMessage = (idbFileMessageKey, message) => ({type: SET_IDB_KEY_IN_MESSAGE, idbFileMessageKey})
+
+// при каждом рефреще страницы мб запускать юзэффект для 
+
+// const createKeyFor = (str) => {
+//     let timestamp = + new Date()
+//     return `${str}-${timestamp}`
+// }
+
+export const saveImageToIDB = (blobObj, fileId) =>  async(dispatch) => { // add message.id and chatid and cahtTypeid for that key
+    // let imgKey = createKeyFor('image')
+    
+    // let chatId = parseInt(localStorage.getItem('chatId') )
+    // let chatTypeId = parseInt(localStorage.getItem('chatTypeId') )
+ 
+    // await idbKeyval.set(`image-${chatTypeId}-${chatId}-${fileId}`, blobObj)
+    await idbKeyval.set(`image-${fileId}`, blobObj)
+    // dispatch(setImg)
+}
+
+export const loadImageFromIDB = (ImgKey) =>  async(dispatch) => { // get that blob add it to the img: src
+    return await idbKeyval.get(ImgKey)
+} 
+
+
+function urltoFile(url, filename, mimeType){
+    console.log("url to file" + url)
+    console.log(url)
+    return (fetch(url)
+        .then(function(res){return res.arrayBuffer();})
+        .then(function(buf){return new File([buf], filename,{type:mimeType});})
+    );
+}
+
+
+export const getFile = (fileId) => async(dispatch) => {
+    let downloadedFile = await chatsAPI.getFile(fileId)
+    // console.log("downloadedFile")
+    // console.log(downloadedFile)
+    // return downloadedFile.data
+    // return downloadedFile
+    let file = downloadedFile.data
+    console.log(file);
+    if(file.name){ 
+        urltoFile(file.file, file.name, file.format)
+            .then(function(fileConv){   
+                    if(file.isImage){
+                        console.log('file.isImage');  
+                        
+                        let reader = new FileReader();
+                        reader.onload = function(upload) { 
+                            console.log("Uploaded");
+                            dispatch(saveImageToIDB(upload.target.result, fileId))   //  dispatch(loadImageFromIDB())
+                        }
+                        reader.readAsDataURL(fileConv); // Нет необходимости что-либо отзывать. Отозвать мы не сможем блоб иибо он к фотке прикручен
+
+                    } else {
+                        let blob = URL.createObjectURL(fileConv); // Прямой доступ к Blob, без «кодирования/декодирования». ( для загрузки большых блобов быстрее гораздо)
+                        saveAs(fileConv);
+                        URL.revokeObjectURL(blob)
+                    } 
+                    
+                 })
+    } else {
+        console.log('error in getting file from api')
+    }
+}
+ 
 
 
 
@@ -281,6 +358,23 @@ export const setRefreshMessageCreating = (isRefreshedAfterMC) => ({type: SET_REF
 
 export const incNumOfDeletedMsgs = () => ({type: INC_NUM_OF_DELETED_MSGS})
 export const nullNumOfDeletedMsgs = () => ({type: NULL_NUM_OF_DELETED_MSGS})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // export const setRefreshAfterDM = (isRefreshedAfterDM) => ({type: SET_REFRESH_AFTER_DM, isRefreshedAfterDM})
 // export const setPreFetchCC = (preFetchCC) => ({type: SET_PREFETCH_CC, preFetchCC})
@@ -451,55 +545,29 @@ export const getMessages = (chatTypeId, chatId, readFromIndex, readFromIndexBefo
     //   firstOfSetOfMsgsId=null,  
                             query=null, isRefreshAfterMsgCreating=null, numOfDeletedMsgs=0) =>  async(dispatch) => {
 
-
-    //  response.data.data.readFromIndexBefore !==  readFromIndexBefore -> old msgs download ( and we fetch with readFromIndex=readFromIndexNext)
-
-
-    // if (response.data.data.readFromIndexBefore ===  readFromIndexBefore && response.data.data.readFromIndexNext !==  readFromIndexBefore)
-
-    // let kek = fromWhere;
-    // console.log('from '+ kek)
-    // debugger // in this function changing state -> so it re-runs render of page but not like 1 action - so it not good and can affect on some vals that relative to part of its data
     dispatch(setFetchingMoreMsgs(true))
     if(numOfDeletedMsgs > 0){
         dispatch(nullNumOfDeletedMsgs())
     }
     let response = await chatsAPI.getMessages(chatTypeId, chatId, readFromIndex, readFromIndexBefore, query, numOfDeletedMsgs);
     if(response.data.resultCode === 0){
-        // console.log(`getMessages.response.data.data`);
-        // console.log(response.data)
-        // TODO move to chats-selector
-        // let allMsgs = [...getMessagesHelper(response.data.data.oldMsgs, true, chatTypeId, chatId), ...getMessagesHelper(response.data.data.newMsgs, false)].sort((msg1, msg2) => msg1.sended - msg2.sended)
-        let allMsgs = getMessagesHelper(response.data.data.items, chatTypeId, chatId) // readed changed to msgViewed
 
-        // if(allMsgs.length > 0){
-        //     // зачистим старый ласт мсджс при getCurrentChatData // if we start again from the chats page (so redux state wasnt deleted)
-        //     // if(firstOfSetOfMsgsId === null){
-        //     //     dispatch(setFirstOfLastSetOfMsgsId(null, null))
-        //     // }
-        //     // console.log('first of the list id') // should be 73 for the first time
-        //     // console.log(allMsgs[0].id)
+        let allKeysForImgs = await idbKeyval.keys() // сократить коллекцию поставив условия выбора ключей
 
-
-        //     // if(readFromIndexBefore !== allMsgs[0].id){/ // значит прогрузка старых, а не рефреш
-        //     //     if(firstOfSetOfMsgsId !== null){
-        //     //         dispatch(setFirsANDLastSetOfMsgsId(allMsgs[0].id, firstOfSetOfMsgsId))
-        //     //     } else {
-        //     //         dispatch(setFirsANDLastSetOfMsgsId(allMsgs[0].id, null))
-        //     //     }
-        //     // }
-
-
-            
-        // } else {
-        //     // no msgs in chat yet ( or you delete all of them)
-        //     // only for the first time can set vals as 0 
-        //     // for getCurrentChatData - while it calling -> firstOfSetOfMsgsId=null => if no msgs getted -> we can set  .firstOfLastSetOfMsgsId and pops.firstOfSetOfMsgsId as (0, 0)
-        //     // все равно не будет в апи читать с 0-го индекса - будет просто сортировка от 0-и выше ( даже если удалено локально ссобщения и там считывание идеt с иднекса)
-        //     // if(firstOfSetOfMsgsId === null){  // GCCD
-        //     //     dispatch(setFirsANDLastSetOfMsgsId(0, 0))
-        //     // }
-        // }
+        let allMsgs = getMessagesHelper(response.data.data.items, chatTypeId, chatId)
+                        .map( (msg) => {
+                            if(msg.fileId !== null){
+                                
+                                let tryIdbKey = `image-${msg.fileId}`
+                                if(allKeysForImgs.includes(tryIdbKey)){
+                                    // console.log(tryIdbKey)
+                                    // debugger
+                                    msg['fileIDBKey'] = tryIdbKey
+                                }
+                            }
+                            return msg
+                        })  
+        
 
         dispatch(setMessages(allMsgs))
 
@@ -528,13 +596,7 @@ export const getMessages = (chatTypeId, chatId, readFromIndex, readFromIndexBefo
 
 
 
-export const getFile = (fileId) => async(dispatch) => {
-    let downloadedFile = await chatsAPI.getFile(fileId)
-    console.log("downloadedFile")
-    console.log(downloadedFile)
-    return downloadedFile.data
-    // return downloadedFile
-}
+
 
 // export const downloadFile = (filePath) => async(dispatch) => {
 //     let file = await chatsAPI.downloadFile(filePath)
@@ -564,9 +626,13 @@ const createMessageSnippent = async(chatTypeId, chatId, messageBody, fileId, dis
         dispatch(stopSubmit("CreateMessage", {_error: message}));
     }
 }
-
+ 
 export const createMessageRequest = (chatTypeId, chatId, messageBody, file=null) => async(dispatch) => {
     dispatch(setMessageCreating(true))
+
+ 
+    dispatch(reset('CreateMessage'));  // requires form name
+
     console.log('in createMessageRequest')
     console.log(file)
     if (file!==null){
@@ -599,10 +665,15 @@ export const editMessageRequest = (chatTypeId, chatId, messageId, newMessageBody
 }
 
 
-export const deleteMessageRequest = (chatTypeId, chatId, messageId) =>  async(dispatch) =>{
+export const deleteMessageRequest = (chatTypeId, chatId, messageId, fileId) =>  async(dispatch) =>{
     // ref={
     // debugger
     dispatch(setFetchingMoreMsgs(true))
+
+    if(fileId){
+        await idbKeyval.delete(`image-${fileId}`)
+    } 
+    
     let response = await chatsAPI.deleteMessage(chatTypeId, chatId, messageId);
     if(response.data.data === null){
         console.log('succs deleted')

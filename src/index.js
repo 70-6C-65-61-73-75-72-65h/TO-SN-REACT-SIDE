@@ -5,11 +5,8 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 import {BrowserRouter} from "react-router-dom";
-// import {posts, messages, dialogs} from './redux/state'; для не дефолтного експорта надо куча приемников и расширения файла а  не путь к модулю
-// import state from './redux/state';
 import store from './redux/redux-store';
 import { Provider } from 'react-redux';
-// import serverUsers from './serverApi/serverUsers';
 
 import reactDebugHooks from 'react-debug-hooks'
 reactDebugHooks(React)
@@ -21,7 +18,7 @@ reactDebugHooks(React)
 // let rerenderEntireTree = (state) => {
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
 
     {/* <Route exact path='https://localhost:3000/api/1.0/users' render={ () => <serverUsers />}/> */}
 
@@ -32,17 +29,6 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root')
   );
-// }
 
-// rerenderEntireTree(store.getState());
-// // store.subscribe(rerenderEntireTree);
-
-// store.subscribe(() => {
-//   let state = store.getState();
-//   rerenderEntireTree(state);
-// });
-
-
-// renderEntireTree(state, addPost, updateNewPostText);
 
 serviceWorker.unregister();

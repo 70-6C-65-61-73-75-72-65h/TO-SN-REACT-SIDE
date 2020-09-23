@@ -12,6 +12,8 @@ import { getMessages, editMessageRequest, deleteMessageRequest, getCurrentChatDa
         toogleMemberStatus, removeMemberMsgs, removeOneMemberMsg, removeMember,
         setChatPhotoRequest, addMember, renameChatRequest, 
         getFile, setRefreshMessageCreating, 
+        // saveImageToIDB, 
+        loadImageFromIDB, 
         // setRefreshAfterDM,
 
         // setOldMsgsDonwload, 
@@ -37,7 +39,9 @@ const getMessageTagWithRef = (data, refCondition, withNewMsgsTag=false, NMTRefCo
                                 ref={refCondition} // OMD_PSR_CBCB(msg.id)
                                 deleteMessageRequest={data.deleteMessageRequest} 
                                 editMessageRequest={data.editMessageRequest} ENSM={!data.msg.local}
-                                chatTypeId={data._chatTypeId} chatId={data._chatId} getFile={data.getFile}/>)
+                                chatTypeId={data._chatTypeId} chatId={data._chatId} getFile={data.getFile}
+                                // saveImageToIDB={data.saveImageToIDB} 
+                                loadImageFromIDB={data.loadImageFromIDB}/>)
     
     return [
         <div className={`${styleMessages.newMsgsStartTag}`} 
@@ -47,7 +51,9 @@ const getMessageTagWithRef = (data, refCondition, withNewMsgsTag=false, NMTRefCo
         ref={refCondition} // OMD_PSR_CBCB(msg.id)
                 deleteMessageRequest={data.deleteMessageRequest} 
                 editMessageRequest={data.editMessageRequest} ENSM={!data.msg.local}
-                chatTypeId={data._chatTypeId} chatId={data._chatId} getFile={data.getFile}/>
+                chatTypeId={data._chatTypeId} chatId={data._chatId} getFile={data.getFile}
+                // saveImageToIDB={data.saveImageToIDB} 
+                loadImageFromIDB={data.loadImageFromIDB}/>
         ]
 }
 
@@ -63,6 +69,10 @@ const ChatDetail = ({getCurrentChatData, getMessages, IsFetchingMsgs,
     chatTypeId:_chatTypeId, chatId:_chatId, readFromIndexNext:_readFromIndexNext, readFromIndex:_readFromIndex, // state
     windowScrollOnMsgCreate, isMessageCreating, isRefreshedAfterMC, 
     numOfDeletedMsgs,
+    
+    // saveImageToIDB,
+    loadImageFromIDB,
+
     ...props}) => {  // other props
 
     const [oldMsgsDonwload, setOldMsgsDonwload] = useState(false, 'oldMsgsDonwload'); 
@@ -175,7 +185,7 @@ const ChatDetail = ({getCurrentChatData, getMessages, IsFetchingMsgs,
                 setRTTAS(false)
             } else {
                 if(conditionNTS){
-                    debugger
+                    // debugger
                     nodeToScroll.scrollIntoView()
                     setPSRS(false)
                 }
@@ -197,22 +207,22 @@ const ChatDetail = ({getCurrentChatData, getMessages, IsFetchingMsgs,
     useEffect(() => {/////////////////////////////////////////////////// (RD)
             // if(preFetch) {
             let sTOID = null
-            console.log("refreshIsRunning")
-            console.log(refreshIsRunning)
+            // console.log("refreshIsRunning")
+            // console.log(refreshIsRunning)
             if(!refreshIsRunning){
             sTOID = setTimeout( async () => {
                 // setRIR(true)
                 if( !oldMsgsDonwload && preFetch && !IsFetchingMsgs && !positioningScrollRefScroll){
                     // debugger
                     setRIR(true)
-                    let currentdate = new Date(); 
-                    let datetime = "Last Sync: " + currentdate.getDate() + "/"
-                    + (currentdate.getMonth()+1)  + "/" 
-                    + currentdate.getFullYear() + " @ "  
-                    + currentdate.getHours() + ":"  
-                    + currentdate.getMinutes() + ":" 
-                    + currentdate.getSeconds();
-                    console.log(datetime)
+                    // let currentdate = new Date(); 
+                    // let datetime = "Last Sync: " + currentdate.getDate() + "/"
+                    // + (currentdate.getMonth()+1)  + "/" 
+                    // + currentdate.getFullYear() + " @ "  
+                    // + currentdate.getHours() + ":"  
+                    // + currentdate.getMinutes() + ":" 
+                    // + currentdate.getSeconds();
+                    // console.log(datetime)
                     await getMessages(_chatTypeId, _chatId, _readFromIndex, props.readFromIndexBefore, null, (windowScrollOnMsgCreate && !isMessageCreating), numOfDeletedMsgs )
                     setRIR(false)
                 } 
@@ -240,7 +250,7 @@ const ChatDetail = ({getCurrentChatData, getMessages, IsFetchingMsgs,
                 // }
             }
             setPSRS(true)
-            debugger
+            // debugger
             fetchOldMsgs()
         }
         // написать отмену загрузки данных (сообщений с АПИ)
@@ -263,7 +273,9 @@ const ChatDetail = ({getCurrentChatData, getMessages, IsFetchingMsgs,
     let messages = props.messages.map((msg, index) => 
                                         {
                                             let dataToMsg = {msg:msg, getFile:props.getFile, _chatId:_chatId, _chatTypeId:_chatTypeId,
-                                                editMessageRequest:props.editMessageRequest, deleteMessageRequest:props.deleteMessageRequest}
+                                                editMessageRequest:props.editMessageRequest, deleteMessageRequest:props.deleteMessageRequest,
+                                                // saveImageToIDB:saveImageToIDB, 
+                                                loadImageFromIDB:loadImageFromIDB }
 
                                             if(props.currentChat.firstNewMsgID!==null && props.currentChat.firstNewMsgID <= msg.id && 
                                                 (index === 0 || props.messages[index-1].id < props.currentChat.firstNewMsgID ))
@@ -280,9 +292,9 @@ const ChatDetail = ({getCurrentChatData, getMessages, IsFetchingMsgs,
                                             }
                                             }).flat()  // if we create newMsgsStartTag additional tag
     messages.unshift(beforeMsgsDiv) // add div before first msg                                           
-    if(messages.length < 3){ // сообщений становится ноль после удаления (иногда) - после этого надо запустить процес прогрузки старых сообщений 
-        debugger
-    }
+    // if(messages.length < 3){ // сообщений становится ноль после удаления (иногда) - после этого надо запустить процес прогрузки старых сообщений 
+    //     debugger
+    // }
     const prefetchOper = (method, chatTypeId, chatId) => (selectedMemberId)  => () => method(chatTypeId, chatId, selectedMemberId)
     let memberOpers = [{method: props.toogleMemberStatus, name: 'Toogle Member'}, {method: props.removeMemberMsgs, name: 'Remove All Member Messages'}, {method: props.removeMember, name: 'Remove Member'}]
     let chatUsersIds = props.currentChat.members.map(member => member.id)
@@ -433,6 +445,11 @@ export default compose(
 
                                 getFile,  
                                 setRefreshMessageCreating,
+
+                                // saveImageToIDB,
+                                loadImageFromIDB,
+
+
                             }),
     withRouter
 )(ChatDetail)
@@ -441,3 +458,5 @@ export default compose(
 
 // pre render page effect useLayoutEffect
 // post render page effect useEffect
+
+

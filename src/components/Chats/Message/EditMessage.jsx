@@ -3,8 +3,10 @@ import React, { useState } from 'react';
 import { useHotEditing } from '../../../customHooks/hotEditing';
 import styleMessages from './Message.module.css';
 import { maxLength1000 } from '../../../utils/validators/validators';
-
-import { saveAs } from 'file-saver';
+ 
+import { useRef } from 'react';
+import { useEffect } from 'react';
+import Preloader from '../../common/Preloader/Preloader';
 
 
 const EditMessageActive = ({isInvalid, onMBChange, deactivateEditMode, editedMessage, charCount}) => {
@@ -18,13 +20,20 @@ const EditMessageActive = ({isInvalid, onMBChange, deactivateEditMode, editedMes
     </div>)
 }
 
-const EditMessageInactive = ({fileId, activateEditMode, messageBody, fileImageURL, loadFile, ENSM}) => { 
+// isFileFetching
+
+const EditMessageInactive = ({fileId, activateEditMode, messageBody, fileImageURL, loadFile, ENSM }) => {  // , messageId => loadFile(messageId, fileId)
     if (fileId){
         return ( <div className={styleMessages.messageBody} onDoubleClick={!ENSM? activateEditMode: undefined}> {messageBody} 
             <div className={`${styleMessages.messageFile} ${fileImageURL===null ? styleMessages.fileImageDeactivate : styleMessages.fileImageActivate}`}>
-                        <span>+ fileId: {fileId}</span>
-                        <button onClick={()=>loadFile(fileId)}>GetFile</button> 
-                        <img src={fileImageURL}/>
+                        {loadFile && <>
+                            <span> + fileId: {fileId}</span>
+                            <button onClick={()=>loadFile(fileId)}>GetFile</button> 
+                        </>}
+
+                        {/* <button onClick={()=>downloadFile(fileId)}>GetFile</button>  */}
+                        <img src={fileImageURL} />
+                        {/* {fileImageURL && <a  onClick={downloadFile} download={imageName}><img src={fileImageURL} /></a>} */}
                 </div>
             </div>)
     } else {
@@ -33,52 +42,56 @@ const EditMessageInactive = ({fileId, activateEditMode, messageBody, fileImageUR
     
 }
 
-function urltoFile(url, filename, mimeType){
-    return (fetch(url)
-        .then(function(res){return res.arrayBuffer();})
-        .then(function(buf){return new File([buf], filename,{type:mimeType});})
-    );
-}
+ 
 
 
-export const EditMessage = ({messageBody, editMessage, ENSM, fileId, getFile}) => {
+export const EditMessage = ({messageBody, editMessage, ENSM, 
+    fileId, fileIDBKey,  loadImageFromIDB,  
+    getFile,
+                            }) => {
     const [activateEditMode, deactivateEditMode, onMBChange, editMode, editedMessage, isInvalid, charCount] = useHotEditing(messageBody, editMessage, [maxLength1000], 1000) 
+ 
 
-    const [fileImageURL, setFII] = useState(null)
-    const loadFile = async(fileId) => { // click -> then it will loaded to explorer or added as src to img
-        let file = await getFile(fileId)
-        if(file.name){
+    const [isFetching, setIF] = useState(false)
 
-            console.log(file)
-        
-            if(!file.isImage){
-                urltoFile(file, file.name, file.format)
-                .then(function(file){ 
-                    console.log(file);
-                        saveAs(file); });
-            } else {
+    const [fileImageURL, setFIU] = useState(null) // fileIDBValue in fileImageURL 
 
-                urltoFile(file.file, file.name, file.format)
-                .then(function(file){ 
-                    let reader = new FileReader();
-                    reader.onload = function(upload) {
-                        setFII(upload.target.result)
-                        console.log(upload);
-                        console.log(upload.target.result);
-                        console.log("Uploaded");
-                    }
-                    reader.readAsDataURL(file);})
+    useEffect(() => { 
+        if(!isFetching){ 
+            console.log(fileIDBKey)  
+            if( fileIDBKey && !fileImageURL){ 
+                console.log(fileIDBKey)  
+                setIF(true)
+                async function loadFromIdb(fileIDBKey){  
+                    console.log('loadFromIdb')
+                    let fileIDBValue = await loadImageFromIDB(fileIDBKey) // like  image-chatTypeId-chatId-messageId
+                    console.log("fileIDBValue for file IDB key: " + fileIDBKey)
+                    console.log(fileIDBValue)
+                    setFIU(fileIDBValue) 
+                    setIF(false)
+                }
+                loadFromIdb(fileIDBKey)
             }
 
-        } else {
-            console.log('error in getting file from api')
-        }
-        
-    }
+        } 
+    },[fileIDBKey, loadImageFromIDB, fileImageURL, isFetching] ) // по идее запустится только 1 раз после открытия чатдитейл ( )
+
+
+    if(fileIDBKey && fileImageURL===null) return <Preloader/>
+
     return ( 
             <>
                 {!editMode && 
-                <EditMessageInactive fileId={fileId} activateEditMode={activateEditMode} messageBody={messageBody} fileImageURL={fileImageURL} loadFile={loadFile.bind(this)} ENSM={ENSM}/>
+                <EditMessageInactive fileId={fileId} activateEditMode={activateEditMode} messageBody={messageBody} 
+                fileImageURL={fileImageURL} 
+                // loadFile={loadFile.bind(this)} 
+                // messageId={messageId}
+                loadFile={!fileImageURL ? getFile: undefined} // we cant get file if we already load from idb value for img:src
+                ENSM={ENSM}
+                
+                // downloadFile={downloadFile}
+                // imageName={imageName}
+                />
                 }
                 {editMode &&
                 <EditMessageActive isInvalid={isInvalid} onMBChange={onMBChange} deactivateEditMode={deactivateEditMode} editedMessage={editedMessage} charCount={charCount} />
@@ -86,3 +99,14 @@ export const EditMessage = ({messageBody, editMessage, ENSM, fileId, getFile}) =
             </>  
     )
 }
+
+// tasks
+
+// url browser add
+
+// scss change and add
+
+// validator create message make XoR-able
+
+// photo and tap open in that window
+

@@ -23,7 +23,7 @@ const Message = (props, ref) => {
     const editMessage = (chatTypeId, chatId,  message) => (messageBody) => editMessageRequest(chatTypeId, chatId, message.id, messageBody)
     
     const onDeleteMsg = () => {
-        deleteMessageRequest(chatTypeId, chatId, message.id)
+        deleteMessageRequest(chatTypeId, chatId, message.id, message.fileId)
     }
 
     
@@ -32,7 +32,16 @@ const Message = (props, ref) => {
         <div className={styleMessages.messageAuthorName}>
             <NavLink to={`/profile/${message.authorId}`}>{message.authorName}</NavLink>
         </div>
-        <EditMessage ENSM={ENSM} editMessage={editMessage(chatTypeId, chatId, message)} messageBody={message.body} getFile={getFile} downloadFile={downloadFile} fileId={message.fileId}/>
+        <EditMessage ENSM={ENSM} editMessage={editMessage(chatTypeId, chatId, message)} messageBody={message.body} getFile={getFile} downloadFile={downloadFile} fileId={message.fileId}
+        
+        // saveImageToIDB={props.saveImageToIDB}
+        loadImageFromIDB={props.loadImageFromIDB}
+
+        fileIDBKey={message.fileIDBKey}
+
+        // messageId={message.id}
+        
+        />
         <div className={styleMessages.messageSendedEdited}>
             <div className={styleMessages.messageSended}>sended: {convertTime(message.sended)}</div>
             <div className={styleMessages.messageEdited}>edited: {convertTime(message.edited)}</div>

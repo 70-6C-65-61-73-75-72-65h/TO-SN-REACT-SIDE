@@ -45,7 +45,7 @@ const CreateMessageForm = props => {
             </div>
             }
             <div className=''>
-                <button type='submit' disabled={pristine || submitting} >Send</button>
+                <button type='submit' disabled={pristine || submitting}>Send</button>
             </div>
             <div className=''>
                 <button type='button' disabled={pristine || submitting} onClick={reset}>Clear</button>
@@ -63,6 +63,9 @@ const CreateMessageReduxForm = reduxForm({form: 'CreateMessage'})(CreateMessageF
 
 const CreateMessage = (props) => {
     const onSubmit = (formData) => {
+        if(!formData['messageBody'] && formData["uploadedFile"]){
+            formData['messageBody'] = ' '
+        }
         formData["uploadedFile"] ?
             props.createMessageRequest(props.chatTypeId, props.chatId, formData["messageBody"], formData["uploadedFile"]) :
             props.createMessageRequest(props.chatTypeId, props.chatId, formData["messageBody"])
