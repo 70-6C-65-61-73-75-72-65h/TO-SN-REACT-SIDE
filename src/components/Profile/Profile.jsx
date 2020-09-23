@@ -5,9 +5,9 @@ import { maxLength30, maxLength50, maxLength200 } from '../../utils/validators/v
 import { connect } from 'react-redux';
 import { addPost, deletePost, getUserProfile, updateUserProfile, deleteUserProfile, updateStatus, updatePhoto} from '../../redux/profile-reducer';
 import { withRouter, Redirect, NavLink } from 'react-router-dom';
-import styles from '../common/FormsControls/FormsControls.module.css'
+import styles from '../common/FormsControls/FormsControls.module.scss'
 
-import s from './Profile.module.css';
+import s from './Profile.module.scss';
 import ProfileInfo from "./ProfileInfo/ProfileInfo";
 
 import { compose } from 'redux';

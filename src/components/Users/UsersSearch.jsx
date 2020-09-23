@@ -2,7 +2,7 @@ import React from 'react';
 import { createField, Input } from '../common/FormsControls/FormsControls';
 import { reduxForm } from 'redux-form';
 import { maxLength50 } from '../../utils/validators/validators';
-import styles from '../common/FormsControls/FormsControls.module.css'
+import styles from '../common/FormsControls/FormsControls.module.scss'
 import { searchUsers , setQuery} from '../../redux/users-reducer';
 import { connect } from 'react-redux';
 import {getCurrentPage, getQuery} from "../../redux/users-selectors";

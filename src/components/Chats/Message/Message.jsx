@@ -1,5 +1,5 @@
 import React, {useRef, useImperativeHandle, forwardRef } from 'react';
-import styleMessages from './Message.module.css';
+import styleMessages from './Message.module.scss';
 import { NavLink } from 'react-router-dom';
 import { convertTime } from '../../common/utils/convertTime';
 import { EditMessage } from './EditMessage';

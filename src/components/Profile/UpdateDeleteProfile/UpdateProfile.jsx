@@ -5,7 +5,7 @@ import { maxLength30, maxLength50, maxLength200 } from '../../../utils/validator
 import { connect } from 'react-redux';
 import { getUserProfile, updateUserProfile } from '../../../redux/profile-reducer';
 import { Redirect, withRouter } from 'react-router-dom';
-import styles from '../../common/FormsControls/FormsControls.module.css'
+import styles from '../../common/FormsControls/FormsControls.module.scss'
 import withAuthRedirect from '../../../hoc/WithAuthRedirect';
 import { compose } from 'redux';
 import backupQuotes from '../../common/utils/backupQuotes';
@@ -112,8 +112,8 @@ const UpdateProfile = props => {
     if (!props.profile) return <Preloader/>
     return (
         
-        <div className=''>
-            <h2 className=''>Profile Data Changing</h2>
+        <div className='profile_update'>
+            <h2 className='profile_update_header'>Profile Data Changing</h2>
             <UpdateProfileReduxForm onSubmit={onSubmit} profile={props.profile}/>
         </div>
     )

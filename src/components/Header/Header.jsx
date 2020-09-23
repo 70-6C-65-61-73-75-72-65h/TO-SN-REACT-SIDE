@@ -3,7 +3,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import {logout} from "../../redux/auth-reducer";
 
-import s from './Header.module.css';
+import s from './Header.module.scss';
 import {NavLink} from "react-router-dom";
 
 const Header = (props) => {

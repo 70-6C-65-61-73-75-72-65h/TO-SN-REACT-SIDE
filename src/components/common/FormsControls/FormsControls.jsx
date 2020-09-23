@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styles from './FormsControls.module.css'
+import styles from './FormsControls.module.scss'
 import { Field } from 'redux-form';
 
 import PropTypes from 'prop-types';

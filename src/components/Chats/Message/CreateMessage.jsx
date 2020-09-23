@@ -1,5 +1,5 @@
 import React, {useState}  from 'react';
-import styles from '../../common/FormsControls/FormsControls.module.css'
+import styles from '../../common/FormsControls/FormsControls.module.scss'
 import { createField, TextArea, FileInput, Input } from '../../common/FormsControls/FormsControls';
 import { maxLength1000 } from '../../../utils/validators/validators';
 import { reduxForm } from 'redux-form';

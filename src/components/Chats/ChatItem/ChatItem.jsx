@@ -2,8 +2,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import React from 'react';
-import s from './../Chats.module.css';
-import styleMessages from './../Message/Message.module.css';
+import s from './../Chats.module.scss';
+import styleMessages from './../Message/Message.module.scss';
 import { NavLink } from "react-router-dom";
 import { convertTime } from '../../common/utils/convertTime';
 import Preloader from '../../common/Preloader/Preloader';

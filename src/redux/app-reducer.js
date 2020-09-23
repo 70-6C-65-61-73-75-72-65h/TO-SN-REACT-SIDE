@@ -28,15 +28,13 @@ const appReducer = (state = initialState, action) => {
                 focusedWindows: [...state.focusedWindows, action.newFocusedWindow]
             }
 
-        case CLEAR_FOCUSED_WINDOWS:
-            // debugger
+        case CLEAR_FOCUSED_WINDOWS: 
                 return {
                     ...state,
                     focusedWindows: []
                 }
         
-        case CLEAR_CURRENT_FOCUSED_WINDOW: 
-            // debugger
+        case CLEAR_CURRENT_FOCUSED_WINDOW:  
             return {
                 ...state,
                 focusedWindows: state.focusedWindows.filter(window=> window.id !== action.currentWindowId)
@@ -54,16 +52,12 @@ export const clearAllFocusedWindows = () => ({type: CLEAR_FOCUSED_WINDOWS})
 export const clearCurrentFocusedWindow = (currentWindowId) => ({type: CLEAR_CURRENT_FOCUSED_WINDOW, currentWindowId})
 
 
-export const initializeApp = () => (dispatch) => {
-    // debugger 
+export const initializeApp = () => (dispatch) => { 
     Promise.all([dispatch(getAuthUserData())])
-    .then( resolve => {
-        // debugger
-        // console.log('hui')
+    .then( resolve => { 
         dispatch(initializedSuccess());
     }).catch(error => 
-        {
-            // debugger
+        { 
             if(["Signature has expired.", "Error decoding signature.", "Invalid Authorization header. No credentials provided."].includes(error.response.data.detail)){
                 // console.log(error.response.data.detail)
                 // delete localStorage['token']
@@ -71,22 +65,12 @@ export const initializeApp = () => (dispatch) => {
             } else {
                 console.log('its amaizing error - server error')
             }
-            dispatch(initializedSuccess());
-            // dispatch(initializedSuccess());
-            // dispatch(getAuthUserData());
+            dispatch(initializedSuccess()); 
         }
         ).catch(error => {
             console.log('you gonna die')
             dispatch(initializedSuccess());
-        });
-    
-    // authAPI.me()
-    //     .then(response => {
-    //         if (response.data.resultCode === 0) {
-    //             let {id, login, email} = response.data.data;
-    //             dispatch(initializedSuccess());
-    //         }
-    //     });
+        }); 
 }
 
 

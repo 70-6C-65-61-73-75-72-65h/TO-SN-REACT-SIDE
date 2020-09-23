@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useState } from 'react';
 import { useHotEditing } from '../../../customHooks/hotEditing';
-import styleMessages from './Message.module.css';
+import styleMessages from './Message.module.scss';
 import { maxLength1000 } from '../../../utils/validators/validators';
  
 import { useRef } from 'react';

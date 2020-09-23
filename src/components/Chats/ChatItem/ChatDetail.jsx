@@ -24,8 +24,8 @@ import { selectChatMessages, selectCIPS, selectCTIPS, selectCurrentChat, selectF
 import Message from '../Message/Message';
 
 
-import styleMessages from '../Message/Message.module.css';
-import styleChats from '../Chats.module.css';
+import styleMessages from '../Message/Message.module.scss';
+import styleChats from '../Chats.module.scss';
 import CreateMessage from '../Message/CreateMessage'; 
 import { ChangeChatPhoto, RenameChat, Member, Members, SelectMemberToChat } from './ChatItem';
 import { addFocusedWindow, clearCurrentFocusedWindow } from '../../../redux/app-reducer';

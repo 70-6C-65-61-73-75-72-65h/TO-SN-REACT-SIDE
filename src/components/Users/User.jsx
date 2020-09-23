@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import React from 'react';
-import styles from "./Users.module.css";
+import styles from "./Users.module.scss";
 import userPhoto from "../../assets/images/user.png";
 import {NavLink} from "react-router-dom";
 

@@ -27,7 +27,7 @@
 
 
 import React from 'react';
-import s from './ProfileInfo.module.css';
+import s from './ProfileInfo.module.scss';
 import Preloader from "../../common/Preloader/Preloader";
 import ProfileStatusWithHooks from './ProfileStatusWithHooks';
 import { NavLink } from 'react-router-dom';

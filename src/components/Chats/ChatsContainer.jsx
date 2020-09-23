@@ -55,7 +55,7 @@ import { setCurrentChatData, unSetCurrentChatData, getChats,
         renameChatRequest, setChatPhotoRequest, addMember, deleteChatRequest } from '../../redux/chats-reducer';
 import Preloader from '../common/Preloader/Preloader';
 import ChatItem from './ChatItem/ChatItem';
-import chatsStyles from './Chats.module.css';
+import chatsStyles from './Chats.module.scss';
 import { selectChats, selectFocusedWindowUsersForChat, selectFocusedWindowAddUserForChat, selectFocusedWindowMembersForChat, selectFocusedWindowMemberOperationsForChat } from '../../redux/chats-selector';
 
 import { withRouter } from 'react-router-dom';
@@ -63,7 +63,7 @@ import { reduxForm, formValues } from 'redux-form';
 import { createField, Input, ReduxFormSnippet } from '../common/FormsControls/FormsControls';
 import { maxLength200 } from '../../utils/validators/validators';
  
-import styleMessages from './Message/Message.module.css';
+import styleMessages from './Message/Message.module.scss';
 import UsersContainer from '../Users/UsersContainer';
 import { useRefactorPopUp } from '../../customHooks/focusedElems';
 import { clearCurrentFocusedWindow, addFocusedWindow } from '../../redux/app-reducer';

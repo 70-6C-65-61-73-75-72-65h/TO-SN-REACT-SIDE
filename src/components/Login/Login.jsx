@@ -5,7 +5,7 @@ import { requiredField } from '../../utils/validators/validators';
 import { connect } from 'react-redux';
 import { login } from '../../redux/auth-reducer';
 import { Redirect } from 'react-router-dom';
-import styles from '../common/FormsControls/FormsControls.module.css'
+import styles from '../common/FormsControls/FormsControls.module.scss'
 
 // can show the summary error
 // form-level validation
