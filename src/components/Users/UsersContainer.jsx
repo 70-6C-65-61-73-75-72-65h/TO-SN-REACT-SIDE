@@ -3,7 +3,10 @@ import { connect } from 'react-redux';
 import {
     follow,
     setCurrentPage,
-    unfollow, toggleFollowingProgress, requestUsers, searchUsers
+    unfollow, toggleFollowingProgress, 
+    requestUsers, 
+    searchUsers,
+    setQuery
 } from '../../redux/users-reducer';
 import Users from './Users';
 import Preloader from "../common/Preloader/Preloader";
@@ -32,67 +35,121 @@ import { useUsersEffects } from '../../customHooks/usersHooks';
 // onClick={() => {props.toogleFocuseElem(props.setUsersForChatShow, props.usersForChatShow);onSubmit();}} // blur memberlist -> send to api request
 
 
-
-const UsersContainer = (props) => {
-    // const queried = useQuering(false)
-    // const [query, setQuery] = useState('')
-    // const { currentPage, pageSize } = props;
-    const [onPageChanged] = useUsersEffects(props.getUsers, props.searchUsers, props.query, props.currentPage, props.pageSize)
-
-    // debugger
-    // console.log(props.chatUsersIds)
-
-    return (<div className={props.styleForUsers ? props.styleForUsers: ''}>
-        {props.isFetching ? <Preloader /> : null}
-        <div >
-            <UsersSearch/>
-        </div>
-        { props.fWUFCID === 0 ? 
-        //props.forChat && props.setSelectedForChatUsers ?  
-        
-        
-        // <a onClick={props.toogleFocuseElem(props.setUsersForChatShow, props.usersForChatShow)}>
-        //     End Selection
-        // </a>
-        <a onClick={ () =>  props.clearCurrentFocusedWindow(props.fWUFCID) }>
-            End Selection
-        </a>
-        : null}
-        
-        <Users 
-        
-            totalUsersCount={props.totalUsersCount}
-            pageSize={props.pageSize}
-            currentPage={props.currentPage}
-            onPageChanged={onPageChanged}
-            users={props.users}
-            follow={props.follow}
-            unfollow={props.unfollow}
-            followingInProgress={props.followingInProgress}
+// setQuery - delete query discard
 
 
-            forChat = {props.forChat}
+class UsersContainer extends React.Component{
+
+    componentDidMount(){
+        this.props.query==='' ? this.props.getUsers(this.props.currentPage, this.props.pageSize) : this.props.searchUsers(this.props.currentPage, this.props.query);
+    }
+
+    componentDidUpdate(){
+    }
+
+    componentWillUnmount(){
+        this.props.setQuery('')
+    }
+
+    onPageChanged = (pageNumber) => {
+        this.props.query==='' ? this.props.getUsers(pageNumber, this.props.pageSize) : this.props.searchUsers(pageNumber, this.props.query);
+    }
 
 
-            setSelectedForChatUsers = {props.setSelectedForChatUsers} // can be undef if it member adding
-            setSelectedForChatUser = {props.setSelectedForChatUser} // can be undef if it chat creation
-            chatUsersIds = {props.chatUsersIds} // can be undef if it chat creation
+    render(){
+        return (
+            <div className={this.props.styleForUsers ? this.props.styleForUsers: ''}>
+                {this.props.isFetching ? <Preloader /> : null}
+                <div >
+                    <UsersSearch/>
+                </div>
+                { this.props.fWUFCID === 0 ?   
+                <a onClick={ () =>  this.props.clearCurrentFocusedWindow(this.props.fWUFCID) }>
+                    End Selection
+                </a>
+                : null}
+                
+                <Users  
+                    totalUsersCount={this.props.totalUsersCount}
+                    pageSize={this.props.pageSize}
+                    currentPage={this.props.currentPage}
+                    onPageChanged={this.onPageChanged}
+                    users={this.props.users}
+                    follow={this.props.follow}
+                    unfollow={this.props.unfollow}
+                    followingInProgress={this.props.followingInProgress}
 
-            // toogleFocuseElemArr={props.toogleFocuseElemArr}
-            // usersForChatShow={props.usersForChatShow} 
 
-            
-            // setUsersForChatShow={props.setUsersForChatShow} // can be undef if it chat creation
-            fWAUFC={props.fWAUFC}
-            clearCurrentFocusedWindow={props.clearCurrentFocusedWindow}
+                    forChat = {this.props.forChat}
 
 
-            selectedForChatUsers={props.selectedForChatUsers} // can be undef if it member adding
-            styleForUsers= {props.styleForUsers}
-            styleForUser={props.styleForUser}
-        />
-    </div>)
+                    setSelectedForChatUsers = {this.props.setSelectedForChatUsers} // can be undef if it member adding
+                    setSelectedForChatUser = {this.props.setSelectedForChatUser} // can be undef if it chat creation
+                    chatUsersIds = {this.props.chatUsersIds} // can be undef if it chat creation 
+                    // toogleFocuseElemArr={props.toogleFocuseElemArr}
+                    // usersForChatShow={props.usersForChatShow}  
+                    // setUsersForChatShow={props.setUsersForChatShow} // can be undef if it chat creation
+                    fWAUFC={this.props.fWAUFC}
+                    clearCurrentFocusedWindow={this.props.clearCurrentFocusedWindow}
+
+
+                    selectedForChatUsers={this.props.selectedForChatUsers} // can be undef if it member adding
+                    styleForUsers= {this.props.styleForUsers}
+                    styleForUser={this.props.styleForUser}
+                />
+            </div>
+        )
+    }
 }
+
+
+
+
+// const UsersContainer = (props) => { 
+//     const [onPageChanged] = useUsersEffects(props.getUsers, props.searchUsers, props.query, props.currentPage, props.pageSize)
+ 
+
+//     return (<div className={props.styleForUsers ? props.styleForUsers: ''}>
+//         {props.isFetching ? <Preloader /> : null}
+//         <div >
+//             <UsersSearch/>
+//         </div>
+//         { props.fWUFCID === 0 ?   
+//         <a onClick={ () =>  props.clearCurrentFocusedWindow(props.fWUFCID) }>
+//             End Selection
+//         </a>
+//         : null}
+        
+//         <Users  
+//             totalUsersCount={props.totalUsersCount}
+//             pageSize={props.pageSize}
+//             currentPage={props.currentPage}
+//             onPageChanged={onPageChanged}
+//             users={props.users}
+//             follow={props.follow}
+//             unfollow={props.unfollow}
+//             followingInProgress={props.followingInProgress}
+
+
+//             forChat = {props.forChat}
+
+
+//             setSelectedForChatUsers = {props.setSelectedForChatUsers} // can be undef if it member adding
+//             setSelectedForChatUser = {props.setSelectedForChatUser} // can be undef if it chat creation
+//             chatUsersIds = {props.chatUsersIds} // can be undef if it chat creation 
+//             // toogleFocuseElemArr={props.toogleFocuseElemArr}
+//             // usersForChatShow={props.usersForChatShow}  
+//             // setUsersForChatShow={props.setUsersForChatShow} // can be undef if it chat creation
+//             fWAUFC={props.fWAUFC}
+//             clearCurrentFocusedWindow={props.clearCurrentFocusedWindow}
+
+
+//             selectedForChatUsers={props.selectedForChatUsers} // can be undef if it member adding
+//             styleForUsers= {props.styleForUsers}
+//             styleForUser={props.styleForUser}
+//         />
+//     </div>)
+// }
 
 
 let mapStateToProps = (state) => {
@@ -109,7 +166,8 @@ let mapStateToProps = (state) => {
 
 
 export default compose(
-    connect(mapStateToProps, { follow, unfollow, setCurrentPage, toggleFollowingProgress, getUsers: requestUsers, searchUsers })
+    connect(mapStateToProps, { follow, unfollow, setCurrentPage, toggleFollowingProgress, getUsers: requestUsers, searchUsers,
+        setQuery })
 )(UsersContainer)
 
 // class UsersContainer extends React.Component {

@@ -104,6 +104,7 @@ export const chatsAPI = {
         // debugger
         let putData = {"putType": putType}
         putData[secondArgName] = secondArg
+        console.log(putData)
         return instance.put(`api/chats/${chatTypeId}/${chatId}/`, putData)
     },
 
@@ -138,7 +139,7 @@ export const chatsAPI = {
     toogleMemberStatusForConversation(chatTypeId, chatId, putType, userId){  // 'toogleMemberStatus'
         return this.chatPut(chatTypeId, chatId, putType, 'userId', userId)
     },
-    addMemberForConversation(chatTypeId, chatId, putType, userId){  // 'addMember'
+    addMemberForConversation(chatTypeId, chatId, putType, userId){  // 'addMember' 
         return this.chatPut(chatTypeId, chatId, putType, 'userId', userId)
     },
     removeMemberFromConversation(chatTypeId, chatId, putType, userId){  // 'removeMember'

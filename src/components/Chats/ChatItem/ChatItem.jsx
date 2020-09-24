@@ -43,7 +43,7 @@ import UsersContainer from '../../Users/UsersContainer';
 const ChangeChatPhotoForm = (props) => {
     const { handleSubmit, pristine, reset, submitting, error, msgStyle } = props
     return ( // className={s.changeChatPhotoForm} chatsSettingsItem
-        <form onSubmit={handleSubmit} className={`${msgStyle} ${s.addBorder}`}>
+        <form onSubmit={handleSubmit} className={`${msgStyle}`} autoComplete='off'>
             {createField('Photo', 'photo', Input, [maxLength1000])}
             <ReduxFormSnippet  pristine={pristine} reset={reset} submitting={submitting} error={error} sumbitButtonName={'Change Photo'}/>
         </form>
@@ -67,7 +67,7 @@ const RenameChatForm = (props) => {
     const { handleSubmit, pristine, reset, submitting, error, msgStyle } = props
     // let msgStyle = styleMessageClass ? styleMessages.chatsSettingsItemForm : ''
     return ( // className={s.renameChatForm}
-        <form onSubmit={handleSubmit} className={`${msgStyle} ${s.addBorder}`}>
+        <form onSubmit={handleSubmit} className={`${msgStyle}`} autoComplete='off'>
             {createField('Name', 'name', Input, [maxLength200])}
             <ReduxFormSnippet  pristine={pristine} reset={reset} submitting={submitting} error={error} sumbitButtonName={'Rename Chat'}/>
         </form>

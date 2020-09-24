@@ -12,21 +12,22 @@ import Preloader from './components/common/Preloader/Preloader';
 import { initializeApp, clearAllFocusedWindows } from './redux/app-reducer';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import ChatDetail from './components/Chats/ChatItem/ChatDetail';
-
+import ChatDetail from './components/Chats/ChatItem/ChatDetail'; 
 
 const App = React.memo((props) => {
 
-        console.log('rerender')
+        console.log('rerender') 
         console.log(props.initialized)
         useEffect(() => {props.initializeApp()}, [])
         if((!props.initialized)) return <Preloader/>
         return (
                 <div className='whole-app-page-wrapper' onClick={()=>{ props.clearAllFocusedWindows()   }}>
-                <div className='app-wrapper'>
+                <div className='app-wrapper'> 
                         <Header />
                         <Navbar />
                         <div className='app-wrapper-content'>
+                        <div className='content-background'></div>
+
                         <Route path='/profile/:userId?'
                                         render={() => <Profile />} />
                         <Route path='/profile_update'
@@ -49,7 +50,7 @@ const mapStateToProps = (state) => ({
         initialized: state.app.initialized,
 });
 
-export default compose(
+export default compose( 
         withRouter,
         connect(mapStateToProps, {initializeApp,
                 clearAllFocusedWindows

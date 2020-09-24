@@ -8,56 +8,50 @@ import { connect } from 'react-redux';
 import withAuthRedirect from '../../../hoc/WithAuthRedirect';
 import { createMessageRequest  } from '../../../redux/chats-reducer';
 
+import styleMessages from './Message.module.scss'; 
+import { useRef } from 'react';
+
+
+const styleButtons = {
+    visibility: "hidden"
+}
+
 const CreateMessageForm = props => {
     const { handleSubmit, pristine, reset, submitting, error } = props
+    
+    const refSubmit = useRef(null);
 
-
-    // const [selectedFiles, setSelectedFiles] = useState(undefined);
-    // const selectFile = (event) => {
-    //   setSelectedFiles(event.target.files);
-    // };
-
-
-    // const [file, setFile] = useState({
-    //     selectedFiles: undefined,
-    //     currentFile: undefined,
-    //     progress: 0,
-    //     message: "",
-  
-    //     fileInfos: [],
-    //   })
-
-    // const selectFile = (ev) => {
-    //     setFile({
-    //         selectedFiles: ev.target.files,
-    //     });
-    // }
+    const onCTRLEnt = (e) => {
+        if(e.keyCode===13 && e.ctrlKey){  
+            e.target.value += '\r\n';
+        } else if(e.keyCode===13) { 
+            refSubmit.current.click()
+        }
+    } 
 
     // TIP there is problems
     return (
-        <form onSubmit={handleSubmit}>
-            {createField('Write a message...', 'messageBody', TextArea, [maxLength1000])}
-            {createField('Upload a file...', 'uploadedFile', FileInput, null, {type: "file"})} 
+        <form onSubmit={handleSubmit} className={styles.redux_form}  > 
+            {createField('Write a message...', 'messageBody', TextArea, [maxLength1000], {onCTRLEnt: onCTRLEnt.bind(this)})}
+            {createField('Upload a file...', 'uploadedFile', FileInput, null, {type: "file"})}  
             {
             error && 
             <div className={styles.formSummaryError}>
                 {error}
             </div>
             }
-            <div className=''>
-                <button type='submit' disabled={pristine || submitting}>Send</button>
-            </div>
-            <div className=''>
+            <div className={ styles.formButtons}> 
                 <button type='button' disabled={pristine || submitting} onClick={reset}>Clear</button>
-            </div>
+                <button type='submit' disabled={pristine || submitting} ref={refSubmit}>Send</button>
+            </div> 
         </form>
     )
 }
 
 
-const msgCreationStyleForm = {
-    color: 'green'
-}
+// const msgCreationStyleForm = {
+//     color: 'green'
+// }
 
 const CreateMessageReduxForm = reduxForm({form: 'CreateMessage'})(CreateMessageForm)
 
@@ -70,11 +64,11 @@ const CreateMessage = (props) => {
             props.createMessageRequest(props.chatTypeId, props.chatId, formData["messageBody"], formData["uploadedFile"]) :
             props.createMessageRequest(props.chatTypeId, props.chatId, formData["messageBody"])
     }
-    return (
-        <div className=''>
-            <div style={msgCreationStyleForm}>Message:</div>
+    return ( 
+        <>
+            <div className={styleMessages.createMessageFormH}>Message</div>
             <CreateMessageReduxForm onSubmit={onSubmit}/>   
-        </div>
+        </>
     )
 }
 

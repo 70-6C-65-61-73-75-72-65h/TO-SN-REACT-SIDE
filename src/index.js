@@ -10,6 +10,7 @@ import { Provider } from 'react-redux';
 
 import reactDebugHooks from 'react-debug-hooks'
 reactDebugHooks(React)
+ 
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

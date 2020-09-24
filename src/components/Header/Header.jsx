@@ -4,12 +4,15 @@ import {connect} from "react-redux";
 import {logout} from "../../redux/auth-reducer";
 
 import s from './Header.module.scss';
-import {NavLink} from "react-router-dom";
+import {NavLink} from "react-router-dom";  
 
-const Header = (props) => {
+import mylogo from '../../assets/images/mylogo.png';
+
+
+const Header = (props) => { 
     return <header className={s.header}>
-        <img src='https://www.freelogodesign.org/Content/img/logo-ex-7.png' />
-
+        {/* <img src='https://www.freelogodesign.org/Content/img/logo-ex-7.png' /> */}
+            <img src={mylogo}/>
         { props.isAuth ? 
         <div className={s.loginBlock}>{props.login} - <a onClick={props.logout}>Logout</a></div>
                         : 

@@ -42,7 +42,7 @@ const ProfileInfo = ({ profile, updateStatus, updatePhoto, ENSM }) => {
         <div className={s.profile_info}>
             <div className={s.landi_block}>
                 <img
-                    src='https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&h=350' />
+                    src='https://img2.goodfon.ru/wallpaper/big/3/9a/planety-kosmos-oskolki.jpg' />
             </div>
             <div className={s.descriptionBlock}>
                 <div className={s.ava_block}>

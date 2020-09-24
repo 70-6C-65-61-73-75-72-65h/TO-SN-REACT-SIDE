@@ -79,7 +79,7 @@ const CreateChatForm = (props) => {
     //                 .filter(snuser => snuser.userId !== myUserId)
     //                 .map(snuser => ({label: snuser.name, value: snuser.id}))
     return (
-        <form onSubmit={handleSubmit} className={chatsStyles.createChatForm}>
+        <form onSubmit={handleSubmit} className={chatsStyles.createChatForm} autoComplete='off'>
             {/* {createField('DropDownSelect', 'dropDownSelect', DropDownSelect, null, {people: snusers.filter(snuser => snuser.userId !== myUserId)})} */}
             
             {/* {createField('SelectedMembers', 'selectedMembers', MultiSelectWrap, null, 
